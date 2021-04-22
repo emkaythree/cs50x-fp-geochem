@@ -52,6 +52,7 @@ def load(datfile):
         for row in reader:
             # search for the solution master species keyword data block
             if "SOLUTION_MASTER_SPECIES" in row:
+                
                 # search through data block - if there is data on a line, then assume it is a master species, if a line is blank, then assume have reached end of data block - also build in protection in case there is no space between SOLUTION_MASTER_SPECIES and SOLUTION_SPECIES
                 for row in reader:
                     if row and len(row[0]) > 0 and row[0] != "SOLUTION_SPECIES" and row[0] != "SIT":
@@ -82,8 +83,8 @@ def load(datfile):
                     # assume that if an equals sign is in a line, a new species has been found - use variable to keep track of current equation
                     if row and "=" in row[0] and row[0] != "PHASES":
                         # first check if a current equation already exists - if so, add to the database before looking at a new one
-                        #if current_eqn and len(db.execute("SELECT * FROM solution_species WHERE equation = ? AND db_id = ?", current_eqn, current_dat[0]["id"])) == 0:
-                         #   db.execute("INSERT INTO solution_species (equation, reactants, defined_species, other_products, log_k, delta_h, delta_h_units, db_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", current_eqn, reactants, defined_species, other_products, log_k, delta_h, delta_h_units, current_dat[0]["id"])
+                        if current_eqn and len(db.execute("SELECT * FROM solution_species WHERE equation = ? AND db_id = ?", current_eqn, current_dat[0]["id"])) == 0:
+                            db.execute("INSERT INTO solution_species (equation, reactants, defined_species, other_products, log_k, delta_h, delta_h_units, db_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", current_eqn, reactants, defined_species, other_products, log_k, delta_h, delta_h_units, current_dat[0]["id"])
                         # store new current equation
                         current_eqn = row
                         # get reactants
@@ -146,6 +147,7 @@ def load(datfile):
 
                     elif not row:
                         continue
+                    
                     # if encounter the word PHASES, then this indicates the end of the solution species keyword data block
                     elif row[0] == "PHASES":
                         if current_eqn and len(db.execute("SELECT * FROM solution_species WHERE equation = ? AND db_id = ?", current_eqn, current_dat[0]["id"])) == 0:
