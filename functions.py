@@ -4,6 +4,219 @@ import csv
 import os
 import sys
 
+# global variable to store keywords used in PHASES data block
+KEYWORDS_PHASES = [
+    "log_k",
+    "-log_k",
+    "logk",
+    "-l",
+    "-lo",
+    "-log",
+    "-log_",
+    "-log_k",
+    "-logk",
+    "-add_logk",
+    "add_logk",
+    "add_log_k",
+    "-ad",
+    "-add",
+    "-add_",
+    "-add_l",
+    "-add_lo",
+    "-add_log",
+    "-add_log_",
+    "-add_log_k",
+    "delta_h",
+    "-delta_h",
+    "deltah",
+    "-d",
+    "-de",
+    "-del",
+    "-delt",
+    "-delta",
+    "-delta_",
+    "-deltah"
+    "analytical_expression",
+    "a_e",
+    "ae" ,
+    "-a",
+    "-a_",
+    "-a_e",
+    "-ae" ,"-an",
+    "-ana",
+    "-anal",
+    "-analy",
+    "-analyt",
+    "-analyti",
+    "-analytic",
+    "-analytica",
+    "-analytical",
+    "-analytical_",
+    "-analytical_e",
+    "-analytical_ex",
+    "-analytical_exp",
+    "-analytical_expr",
+    "-analytical_expre",
+    "-analytical_expres",
+    "-analytical_express",
+    "-analytical_expressi",
+    "-analytical_expressio",
+    "-analytical_expression",
+    "-vm",
+    "-t_c",
+    "-p_c",
+    "-omega",
+    ]
+
+# global variable to store keywords used in SOLUTION_SPECIES data block
+KEYWORDS_SLNS = [
+    "log_k",
+    "-log_k",
+    "logk",
+    "-l",
+    "-lo",
+    "-log",
+    "-log_",
+    "-log_k",
+    "-logk",
+    "-add_logk",
+    "add_logk",
+    "add_log_k",
+    "-ad",
+    "-add",
+    "-add_",
+    "-add_l",
+    "-add_lo",
+    "-add_log",
+    "-add_log_",
+    "-add_log_k",
+    "delta_h",
+    "-delta_h",
+    "deltah",
+    "-d",
+    "-de",
+    "-del",
+    "-delt",
+    "-delta",
+    "-delta_",
+    "-deltah"
+    "analytical_expression",
+    "a_e",
+    "ae" ,
+    "-a",
+    "-a_",
+    "-a_e",
+    "-ae" ,"-an",
+    "-ana",
+    "-anal",
+    "-analy",
+    "-analyt",
+    "-analyti",
+    "-analytic",
+    "-analytica",
+    "-analytical",
+    "-analytical_",
+    "-analytical_e",
+    "-analytical_ex",
+    "-analytical_exp",
+    "-analytical_expr",
+    "-analytical_expre",
+    "-analytical_expres",
+    "-analytical_express",
+    "-analytical_expressi",
+    "-analytical_expressio",
+    "-analytical_expression",
+    "-dw",
+    "dw",
+    "-vm",
+    "vm",
+    "-gamma",
+    "-g",
+    "-ga",
+    "-gam",
+    "-gamm"
+    "millero",
+    "-millero",
+    "-mi",
+    "-mil",
+    "-mill",
+    "-mille",
+    "-miller",
+    "activity_water",
+    "-ac",
+    "-act",
+    "-acti",
+    "-activ",
+    "-activi",
+    "-activit",
+    "-activity",
+    "-activity_",
+    "-activity_w",
+    "-activity_wa",
+    "-activity_wat",
+    "-activity_wate",
+    "llnl_gamma",
+    "-llnl_gamma",
+    "-ll",
+    "-lln",
+    "-llnl",
+    "-llnl_",
+    "-llnl_g",
+    "-llnl_ga",
+    "-llnl_gam",
+    "-llnl_gamm",
+    "co2_llnl_gamma",
+    "-co2_llnl_gamma",
+    "-co",
+    "-co2",
+    "-co2_",
+    "-co2_l",
+    "-co2_ll",
+    "-co2_lln",
+    "-co2_llnl",
+    "-co2_llnl_",
+    "-co2_llnl_g",
+    "-co2_llnl_ga",
+    "-co2_llnl_gam",
+    "-co2_llnl_gamm",
+    "erm_ddl",
+    "-erm_ddl",
+    "-e",
+    "-er",
+    "-erm",
+    "-erm_",
+    "-erm_d",
+    "-erm_dd",
+    "no_check",
+    "-no_check",
+    "-n",
+    "-no",
+    "-no_",
+    "-no_c",
+    "-no_ch",
+    "-no_che",
+    "-no_chec",
+    "mole_balance",
+    "mass_balance",
+    "mb",
+    "-mass_balance",
+    "-mb",
+    "-mole_balance",
+    "-m",
+    "-mo",
+    "-mol",
+    "-mole",
+    "-mole_",
+    "-mole_b",
+    "-mole_ba",
+    "-mole_bal",
+    "-mole_bala",
+    "-mole_balan",
+    "-mole_balanc",
+    ]
+
+
+
 def main():
     # check if a database file exists for storing data about the geochemical databases
     if not os.path.isfile("database.db"):
@@ -52,7 +265,7 @@ def load(datfile):
         for row in reader:
             # search for the solution master species keyword data block
             if "SOLUTION_MASTER_SPECIES" in row:
-                
+
                 # search through data block - if there is data on a line, then assume it is a master species, if a line is blank, then assume have reached end of data block - also build in protection in case there is no space between SOLUTION_MASTER_SPECIES and SOLUTION_SPECIES
                 for row in reader:
                     if row and len(row[0]) > 0 and row[0] != "SOLUTION_SPECIES" and row[0] != "SIT":
@@ -147,13 +360,167 @@ def load(datfile):
 
                     elif not row:
                         continue
-                    
+
                     # if encounter the word PHASES, then this indicates the end of the solution species keyword data block
                     elif row[0] == "PHASES":
                         if current_eqn and len(db.execute("SELECT * FROM solution_species WHERE equation = ? AND db_id = ?", current_eqn, current_dat[0]["id"])) == 0:
                             db.execute("INSERT INTO solution_species (equation, reactants, defined_species, other_products, log_k, delta_h, delta_h_units, db_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", current_eqn, reactants, defined_species, other_products, log_k, delta_h, delta_h_units, current_dat[0]["id"])
                         print("end of block")
                         break
+
+
+            # search for phases keyword data block
+            if "PHASES" in (item.upper() for item in row):
+                print("PHASES FOUND")
+                phase_count = 0
+                for row in reader:
+
+                    # convert space separated values into a list to correct for poorly formatted files
+                    splitrow = (" ".join(row)).split(" ")
+                    #print(splitrow)
+                    # get rid of blank items in list
+                    temprow = []
+                    for item in splitrow:
+                        if any(splitrow) and item != "":
+                            temprow.append(item.strip())
+
+                    #print("temprow:", temprow)
+                    #print(len(temprow))
+
+                    # search for a phase name - single word that is not a keyword
+                    if temprow and not "=" in temprow and temprow[0][0] != "#" and not temprow[0].lower() in KEYWORDS_PHASES and not temprow[0].upper() in DATABLOCK:
+
+                        # remove any trailing comments
+
+                        newrow = temprow[0].split("#")
+                        print("newrow:", newrow)
+
+                        # SQL doesn't like colons, so change to a period
+                        current_phase = newrow[0].replace(":", ".")
+
+                        phase_count += 1
+                        print(current_phase, phase_count)
+
+
+                        # add to table
+                        if len(db.execute("SELECT * FROM phases WHERE name = ? and db_id = ?", current_phase, current_dat[0]["id"])) == 0:
+                            db.execute("INSERT INTO phases (name, db_id) VALUES (?, ?)", current_phase, current_dat[0]["id"])
+
+                    # ignore comments
+                    elif temprow and temprow[0] == "#":
+                        #print("to ignore:", row)
+                        continue
+
+
+                    # search for an equation based upon an = sign being in the relevant row
+                    elif temprow and "=" in temprow:
+                        #recombine equation
+                        #print("temprow:", temprow)
+                        equation = " ".join(temprow).replace(":", ".")
+                        #print("new temprow", equation)
+
+                        neweqn = equation.split("=")
+                        #print("neweqn:", neweqn)
+                        #print("neweqnlenth = ", len(neweqn))
+
+                        # get the phase being defined i.e. the first species defined on a line including an = sign
+                        defined_phase = ""
+                        for i in range(len(neweqn[0])):
+                            if neweqn[0][i] != " ":
+                                defined_phase += neweqn[0][i]
+                            else:
+                                break
+                        print("defined phase:", defined_phase)
+
+                        # get other reactants - i.e. any other species on the left hand side of the equation
+                        other_reactants = ""
+                        other_reactants_active = False
+                        for i in range(len(neweqn[0])):
+                            if neweqn[0][i-2] == " " and neweqn[0][i-1] == "+" and neweqn[0][i] == " ":
+                                other_reactants_active = True
+
+                            if other_reactants_active == True:
+                                other_reactants += neweqn[0][i]
+                        if other_reactants:
+                            print("Other reactants", other_reactants)
+                        
+                        # get dissolved products - i.e. everything on right hand side of equation
+
+                        dissolved_products = neweqn[1]
+                        #print("dissolved:", dissolved_products)
+
+                        # add to database
+                        db.execute("UPDATE phases SET equation = ?, defined_phase = ?, other_reactants = ?, dissolved_products = ? WHERE name = ? AND db_id = ?", equation, defined_phase, other_reactants, dissolved_products, current_phase, current_dat[0]["id"])
+
+                    # get log K value if present
+                    elif temprow and temprow[0] in ["log_k", "-log_k", "logk", "-l", "-lo", "-log", "-log_", "-log_k", "-logk"]:
+                        print("temprowlogk:", temprow)
+                        db.execute("UPDATE phases SET log_k = ? WHERE name = ? AND db_id = ?", temprow[1], current_phase, current_dat[0]["id"])
+
+                    # get add log K value if present
+                    #elif row and "-add_logk" in row or "add_logk" in row or "add_log_k" in row or "-ad" in row:
+                    elif temprow and temprow[0].lower() in ["-add_logk", "add_logk", "add_log_k", "-ad", "-add", "-add_", "-add_l", "-add_lo", "-add_log", "-add_log_", "-add_log_k", "-add_logk"]:
+                        print("temprow_add", temprow)
+                        db.execute("UPDATE phases SET add_log_k_named_expression = ?, add_log_k_coefficient = ? WHERE name = ? AND db_id = ?", temprow[1], temprow[2], current_phase, current_dat[0]["id"])
+
+
+                    # get delta H value
+                    elif temprow and temprow[0].lower() in ["delta_h", "deltah", "-delta_h"]:
+                        print("delta H:", temprow)
+                        if len(temprow) == 3:
+                            delta_h_units = temprow[2]
+                        else:
+                            delta_h_units = "kJ/mol"
+                        db.execute("UPDATE phases SET delta_h = ?, delta_h_units = ? WHERE name = ? AND db_id = ?", temprow[1], delta_h_units, current_phase, current_dat[0]["id"])
+
+                    # get analytical expression
+                    elif temprow and temprow[0].lower() in ["analytical_expression", "a_e", "ae", "-analytical_expression", "-a", "-a_", "-a_e", "-ae", "-an", "-ana", "-anal", "-analy", "-analyt", "-analyti", "-analytic", "-analytica", "-analytical", "-analytical_", "-analytical_e", "-analytical_ex", "-analytical_exp", "-analytical_expr", "-analytical_expre", "-analytical_expres", "-analytical_express", "-analytical_expressi", "-analytical_expressio"] and not "-ad" in temprow:
+                        if len(temprow) < 7:
+                            while len(temprow) < 7:
+                                temprow.append(0)
+                        print("analytic:", temprow)
+                        db.execute("UPDATE phases SET analytic_1 = ?, analytic_2 = ?, analytic_3 = ?, analytic_4 = ?, analytic_5 = ?, analytic_6 = ? WHERE name = ? AND db_id = ?", temprow[1], temprow[2], temprow[3], temprow[4], temprow[5], temprow[6], current_phase, current_dat[0]["id"])
+
+                    #get molar volume value
+                    elif temprow and temprow[0].lower() in ["-vm", "vm"]:
+                        print("Vm:", temprow)
+                        # get units if specified, otherwise use default
+                        if len(temprow) == 3:
+                            Vm_units = temprow[2]
+                        else:
+                            Vm_units = "cm^3/mol"
+                        db.execute("UPDATE phases SET Vm = ?, Vm_units = ? WHERE name = ? AND db_id = ?", temprow[1], Vm_units, current_phase, current_dat[0]["id"])
+
+
+                    # get critical temperature value
+                    elif temprow and temprow[0].lower() in ["-t_c", "t_c"]:
+                        print("T_c:", temprow)
+                        db.execute("UPDATE phases SET T_c = ? WHERE name = ? AND db_id = ?", temprow[1], current_phase, current_dat[0]["id"])
+
+
+                    # get critical pressure value
+                    elif temprow and temprow[0].lower() in ["-p_c", "p_c"]:
+                        print("P_c:", temprow)
+                        db.execute("UPDATE phases SET P_c = ? WHERE name = ? AND db_id = ?", temprow[1], current_phase, current_dat[0]["id"])
+
+                    # get acentic factor of the gas
+                    elif temprow and temprow[0].lower() in ["-omega", "omega"]:
+                        print("Omega:", temprow)
+                        db.execute("UPDATE phases SET omega = ? WHERE name = ? AND db_id = ?", temprow[1], current_phase, current_dat[0]["id"])
+
+                    elif not temprow:
+                        continue
+
+                    elif temprow and temprow[0] in DATABLOCK:
+                        print("end of block")
+                        break
+
+
+
+
+
+
+
 
 
 

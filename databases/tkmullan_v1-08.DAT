@@ -535,7 +535,7 @@ Ln+3 + H(Tar)- = LnH(Tar)+2		#using data for Lanthanum tartrate from NIST46
 PHASES
 pH_Fix
 	H+ = H+
-	log_k = 0.0
+	log_k 0.0
 #Data for dodecasodium phytate taken from [10CIG/CRE] at 25 C, ionic strength = 1.7 mol/L - can't use as don't have a solution species definition for Na5[InsP6]-7. 
 #Na12[InsP6](s)
 #	Na12[InsP6] = 7Na+ + Na5[InsP6]-7
@@ -548,7 +548,7 @@ Mg5H2[InsP6]:22H2O(s)
 #Data for hexacalcium phytate from [04CRE/CRE]
 Ca6[InsP6](s)
 	Ca6[InsP6] = 6Ca+2 + [InsP6]-12
-	log_k = -58.3
+	log_k -58.3
 	#delta_h 7.6 	#kj/mol Enthalpy of formation
 #Data for pentacalcium dihydrogen phytate from [06VEI/TOR] measured at 37 C in 0.15 mol/L NaClO4	
 Ca5H2[InsP6]:16H2O(s)
