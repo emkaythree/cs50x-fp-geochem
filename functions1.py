@@ -76,7 +76,7 @@ def main():
     db.execute("CREATE TABLE IF NOT EXISTS phases (id INTEGER, name TEXT, equation TEXT, defined_phase TEXT, other_reactants TEXT, dissolved_products TEXT, log_k REAL, add_log_k_named_expression TEXT, add_log_k_coefficient REAL, delta_h REAL, delta_h_units TEXT DEFAULT [kJ/mol], analytic_1 REAL, analytic_2 REAL, analytic_3 REAL, analytic_4 REAL, analytic_5 REAL, analytic_6 REAL, Vm REAL DEFAULT 0, Vm_units TEXT DEFAULT [cm^3/mol], T_c REAL, P_c REAL, omega REAL, db_id INTEGER, PRIMARY KEY(id), FOREIGN KEY(db_id) REFERENCES db_meta(id))")
 
     # for database in databases, load file - from https://stackoverflow.com/questions/10377998/how-can-i-iterate-over-files-in-a-given-directory
-    
+
     #for filename in glob.glob("databases/*"):
      #   load(filename)
     #load("databases/MINTEQ.DAT")
@@ -90,12 +90,26 @@ def main():
     #load("databases/PITZER.DAT")
     #load("databases/test.dat")
     #load("databases/tkmullan_v1-08.DAT")
-    
+
     if len(sys.argv) != 2:
         print("Usage: functions1.py <folder or file>")
+    elif ".dat" in sys.argv[1].lower():
+    #elif ".dat" in sys.argv[1].lower() and sys.argv[1] in (filename for filename in glob.glob("databases/*")):
+        try:
+            load(sys.argv[1])
+        except ValueError as e:
+            print(e)
+    elif sys.argv[1] in (folder for folder in glob.glob("*")):
+        print("valid folder found")
+        for filename in glob.glob("databases/*"):
+            try:
+                load(filename)
+            except ValueError as e:
+                print(e)    
     else:
-        load(sys.argv[1])
-    
+        print("not a valid file or folder")
+        #load(sys.argv[1])
+
 # Phreeqc databases can be inconsistent in terms of separating values with tabs or spaces so need to convert into a consistent format where anything separated by a space or a tab is a separate list item
 def convert(row):
     # join all items in row into a string, and then split into a new list based upon the position of spaces
@@ -111,8 +125,11 @@ def convert(row):
 # function for loading geochemical database files (i.e. .dat files) into the SQL database
 def load(datfile):
 
-    # access sqlite database
+    # check specified file is valid
+    if not os.path.isfile(datfile):
+        raise ValueError("File not found")
 
+    # access sqlite database
     db = cs50.SQL("sqlite:///database1.db")
 
     # create an entry in the db_meta table for the current .dat file if it doesn't already exist
@@ -403,7 +420,7 @@ def load(datfile):
                     # skip blank rows
                     elif not newrow:
                         continue
-                    
+
                     elif newrow[0][0] == "#":
                         continue
 
@@ -446,12 +463,12 @@ def load(datfile):
                     elif newrow[0].lower() in KEYWORDS["log_k"]:
                         print("logknewrow:", newrow)
                         db.execute("UPDATE phases SET log_k = ? WHERE name = ? AND db_id = ?", newrow[1], current_phase, current_dat[0]["id"])
-                    
+
                     # search for add log K values
                     elif newrow[0].lower() in KEYWORDS["add_log_k"]:
                         print("addlogk:", newrow)
                         db.execute("UPDATE phases SET add_log_k_named_expression = ?, add_log_k_coefficient = ? WHERE name = ? AND db_id = ?", newrow[1], newrow[2], current_phase, current_dat[0]["id"])
-                    
+
                     # search for a defined delta H value
                     elif newrow[0].lower() in KEYWORDS["delta_h"]:
                         print("deltaH: ", newrow)
@@ -461,9 +478,9 @@ def load(datfile):
                             delta_h_units = newrow[2].strip("#")
                         else:
                             delta_h_units = "kJ/mol"
-                        
+
                         db.execute("UPDATE phases SET delta_h = ?, delta_h_units = ? WHERE name = ? AND db_id = ?", newrow[1], delta_h_units, current_phase, current_dat[0]["id"])
-                    
+
                     # search for analytical expressions
                     elif newrow[0].lower() in KEYWORDS["analytical_expression"]:
                         print("AE:", newrow)
@@ -473,25 +490,25 @@ def load(datfile):
                             while len(newrow) < 7:
                                 newrow.append(0)
                         print("analytic:", newrow)
-                        
+
                         db.execute("UPDATE phases SET analytic_1 = ?, analytic_2 = ?, analytic_3 = ?, analytic_4 = ?, analytic_5 = ?, analytic_6 = ? WHERE name = ? AND db_id = ?", newrow[1], newrow[2], newrow[3], newrow[4], newrow[5], newrow[6], current_phase, current_dat[0]["id"])
-                    
+
                     # search for Vm value
                     elif newrow[0].lower() in KEYWORDS["Vm"]:
                         print("Vm:", newrow)
-                        
+
                         # get units if specified, otherwise use default
                         if len(newrow) == 3:
                             Vm_units = newrow[2]
                         else:
                             Vm_units = "cm^3/mol"
-                            
+
                         db.execute("UPDATE phases SET Vm = ?, Vm_units = ? WHERE name = ? AND db_id = ?", newrow[1], Vm_units, current_phase, current_dat[0]["id"])
-                    
+
                     # get critical temperature value
                     elif newrow[0].lower() in KEYWORDS["t_c"]:
                         print("T_c:", newrow)
-                        db.execute("UPDATE phases SET T_c = ? WHERE name = ? AND db_id = ?", newrow[1], current_phase, current_dat[0]["id"])                                            
+                        db.execute("UPDATE phases SET T_c = ? WHERE name = ? AND db_id = ?", newrow[1], current_phase, current_dat[0]["id"])
 
                     # get critical pressure value
                     elif newrow[0].lower() in KEYWORDS["p_c"]:
