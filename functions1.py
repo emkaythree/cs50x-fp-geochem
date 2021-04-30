@@ -76,7 +76,7 @@ def main():
     db.execute("CREATE TABLE IF NOT EXISTS phases (id INTEGER, name TEXT, equation TEXT, defined_phase TEXT, other_reactants TEXT, dissolved_products TEXT, log_k REAL, add_log_k_named_expression TEXT, add_log_k_coefficient REAL, delta_h REAL, delta_h_units TEXT DEFAULT [kJ/mol], analytic_1 REAL, analytic_2 REAL, analytic_3 REAL, analytic_4 REAL, analytic_5 REAL, analytic_6 REAL, Vm REAL DEFAULT 0, Vm_units TEXT DEFAULT [cm^3/mol], T_c REAL, P_c REAL, omega REAL, db_id INTEGER, PRIMARY KEY(id), FOREIGN KEY(db_id) REFERENCES db_meta(id))")
 
     # for database in databases, load file - from https://stackoverflow.com/questions/10377998/how-can-i-iterate-over-files-in-a-given-directory
-
+    
     #for filename in glob.glob("databases/*"):
      #   load(filename)
     #load("databases/MINTEQ.DAT")
@@ -88,9 +88,14 @@ def main():
     #load("databases/sit.dat")
     #load("databases/frezchem.dat")
     #load("databases/PITZER.DAT")
-    load("databases/test.dat")
+    #load("databases/test.dat")
     #load("databases/tkmullan_v1-08.DAT")
-
+    
+    if len(sys.argv) != 2:
+        print("Usage: functions1.py <folder or file>")
+    else:
+        load(sys.argv[1])
+    
 # Phreeqc databases can be inconsistent in terms of separating values with tabs or spaces so need to convert into a consistent format where anything separated by a space or a tab is a separate list item
 def convert(row):
     # join all items in row into a string, and then split into a new list based upon the position of spaces
