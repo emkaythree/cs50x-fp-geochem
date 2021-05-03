@@ -101,7 +101,7 @@ def main():
             print(e)
     elif sys.argv[1] in (folder for folder in glob.glob("*")):
         print("valid folder found")
-        for filename in glob.glob("databases/*"):
+        for filename in glob.glob(sys.argv[1] + "/*"):
             try:
                 load(filename)
             except ValueError as e:
