@@ -30,10 +30,13 @@ def index():
     if flask.request.method == "GET":
 
         # summarise current status
-        summary = db.execute("SELECT SUM(solution_master_species) FROM db_meta")
+        totals = db.execute("SELECT SUM(solution_master_species), SUM(solution_species), SUM(phases) FROM db_meta")
+        total_SMS = totals[0].get("SUM(solution_master_species)")
+        total_SS = totals[0].get("SUM(solution_species)")
+        total_PH = totals[0].get("SUM(phases)")
 
         flask.flash("Hello!")
-        return flask.render_template("index.html", summary=summary)
+        return flask.render_template("index.html", total_SMS=total_SMS, total_SS=total_SS, total_PH=total_PH)
     else:
         if flask.request.form.get("load"):
             flask.flash("loaded!")
@@ -48,5 +51,9 @@ def index():
 @app.route("/overview")
 def summary():
     flask.flash("overviewed!")
-    return flask.render_template("summary.html")
+
+    summary = db.execute("SELECT * FROM db_meta")
+    
+
+    return flask.render_template("summary.html", summary=summary)
 

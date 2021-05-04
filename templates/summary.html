@@ -6,6 +6,38 @@
 
 {% block main %}
 
-summarise it all
+<div>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Database name</th>
+                <th>Solution master species</th>
+                <th>Solution species</th>
+                <th>Phases</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <!-- Loop through summary table-->
+            {% for item in summary %}
+                <tr>
+                    <td>{{ item.id }}</td>
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.solution_master_species }}</td>
+                    <td>{{ item.solution_species }}</td>
+                    <td>{{ item.phases }}</td>
+                </tr>
+            {% endfor %}
+
+
+        </tbody>
+    </table>
+</div>
+
+<div>
+    <a href="/">&lt;&lt;&lt; Home >>></a>
+</div>
+
 
 {% endblock %}

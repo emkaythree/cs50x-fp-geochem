@@ -91,8 +91,22 @@ def main():
     #load("databases/test.dat")
     #load("databases/tkmullan_v1-08.DAT")
 
+
+
+
     if len(sys.argv) != 2:
-        print("Usage: functions1.py <folder or file>")
+        ######## testing getting sums from database #########
+        #summary = db.execute("SELECT SUM(solution_master_species), SUM(solution_species), SUM(phases) FROM db_meta")
+        #total_SMS = summary[0].get("SUM(solution_master_species)")
+        #total_SS = summary[0].get("SUM(solution_species)")
+        #total_PH = summary[0].get("SUM(phases)")
+        #print(summary, total_SMS, total_SS, total_PH)
+
+        ########testing getting summary table##############
+        print(db.execute("SELECT * FROM db_meta"))
+
+
+        #print("Usage: functions1.py <folder or file>")
     elif ".dat" in sys.argv[1].lower():
     #elif ".dat" in sys.argv[1].lower() and sys.argv[1] in (filename for filename in glob.glob("databases/*")):
         try:
@@ -105,7 +119,7 @@ def main():
             try:
                 load(filename)
             except ValueError as e:
-                print(e)    
+                print(e)
     else:
         print("not a valid file or folder")
         #load(sys.argv[1])
