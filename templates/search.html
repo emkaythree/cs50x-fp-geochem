@@ -1,0 +1,50 @@
+{% extends "layout.html" %}
+
+{% block main %}
+
+    <h1>Select type of data to search</h1>
+
+    <form action="/search" method="post">
+        <div>
+            <select name="type">
+                <option disabled selected value=""></option>
+                <option value="solution_master_species">Solution master species</option>
+                <option value="solution_species">Solution species</option>
+                <option value="phases">Phases</option>
+            </select>
+            <input type="submit" value="Search">
+        </div>
+        <div>
+            <h3>Solution master species search options</h3>
+                <input autocomplete="off" placeholder="Element" type="text">
+                <input autocomplete="off" placeholder="Species" type="text">
+                <select name="primary">
+                    <option value="all">All</option>
+                    <option value="primary">Primary master species</option>
+                    <option value="secondary">Secondary master species</option>
+                </select>
+
+
+        </div>
+        <div>
+            <h3>Solution species search options</h3>
+                <input autocomplete="off" placeholder="Equation" type="text">
+                <input autocomplete="off" placeholder="Reactants" type="text">
+                <input autocomplete="off" placeholder="Defined species" type="text">
+                <input autocomplete="off" placeholder="Other products" type="text">
+        </div>
+        <div>
+            <h6>Display:</h6>
+            <input type="Checkbox" name="SS_display" value="master_species">Master species?
+        </div>
+        <div>
+            <h3>Phases search options</h3>
+
+
+        </div>
+
+    </form>
+
+
+
+{% endblock %}

@@ -44,6 +44,10 @@ def index():
 
         elif flask.request.form.get("overview"):
             return flask.redirect("/overview")
+
+        elif flask.request.form.get("search"):
+            return flask.redirect("/search")
+
         else:
             return flask.redirect("/")
 
@@ -53,7 +57,29 @@ def summary():
     flask.flash("overviewed!")
 
     summary = db.execute("SELECT * FROM db_meta")
-    
+
 
     return flask.render_template("summary.html", summary=summary)
 
+@app.route("/search", methods=["GET", "POST"])
+def search():
+    if flask.request.method == "GET":
+        flask.flash("Search!")
+        return flask.render_template("search.html")
+    else:
+        ##
+        ##TODO: get headings from tables ##
+        ##
+        searchtype = flask.request.form.get("type")
+        print(searchtype)
+        if searchtype == "solution_master_species":
+            flask.flash("Solution master species!!")
+        elif searchtype == "solution_species":
+            flask.flash("Solution species!!")
+        elif searchtype == "phases":
+            flask.flash("Phases!!")
+        else:
+            flask.flash("Must specify a valid selection of data to search")
+
+
+        return flask.render_template("search.html")
