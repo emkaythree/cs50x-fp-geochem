@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+
+{% block main %}
+
+<div>
+    <table>
+        <thead>
+            <!-- TODO: generate headings-->
+            {% for key in results[0] %}
+                <td>{{ key }}</td>
+            {% endfor %}
+        </thead>
+        <tbody>
+            {% for result in results %}
+                <tr>
+                    {% for key, value in result.items() %}
+                        <td>{{ value }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{{ results|length }}
+
+
+<div>{{ results[0] }}</div>
+
+
+
+<div>
+    <a href="/">&lt;&lt;&lt; Home >>></a>
+</div>
+<div>
+    <a href="/search">&lt;&lt;&lt; Search >>></a>
+</div>
+
+{% endblock %}
+
+

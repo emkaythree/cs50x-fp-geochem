@@ -76,13 +76,19 @@ def search():
             flask.flash("Solution master species!!")
         elif searchtype == "solution_species":
             flask.flash("Solution species!!")
+            print(flask.request.form.get("defined_species"))
+            results = db.execute(
+                "SELECT solution_species.id AS col0, defined_species AS col1, equation AS col2, primary_master_species AS col3, secondary_master_species AS col4, log_k AS col5, delta_h AS col6, delta_h_units AS col7, db_id AS col8, db_meta.name AS col9 FROM solution_species JOIN db_meta ON solution_species.db_id = db_meta.id WHERE defined_species = ?", flask.request.form.get("defined_species"))
+
+            return flask.render_template("results.html", results=results)
+            #return flask.redirect("/results")
         elif searchtype == "phases":
             flask.flash("Phases!!")
         else:
             flask.flash("Must specify a valid selection of data to search")
 
-
-
-
-
         return flask.render_template("search.html")
+
+#@app.route("/results")
+#def results():
+#    return flask.render_template("results.html")
