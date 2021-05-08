@@ -77,8 +77,8 @@ def main():
 
     # for database in databases, load file - from https://stackoverflow.com/questions/10377998/how-can-i-iterate-over-files-in-a-given-directory
 
-    #for filename in glob.glob("databases/*"):
-     #   load(filename)
+    for filename in glob.glob("databases/*"):
+       load(filename)
     #load("databases/MINTEQ.DAT")
 
     #load("databases/ColdChem.dat")
@@ -293,7 +293,7 @@ def load(datfile):
 
                         # add the mandatory fields of the current equation to solution species table
                         if len(db.execute("SELECT * FROM solution_species WHERE equation = ? AND db_id = ?", current_eqn[0], current_dat[0]["id"])) == 0:
-                            db.execute("INSERT INTO solution_species (equation, reactants, defined_species, primary_master_species, secondary_master_species, other_products, db_id) VALUES (?, ?, ?, ?, ?, ?, ?)", current_eqn[0], reactants, defined_species, primary_ms, secondary_ms, other_products, current_dat[0]["id"])
+                            db.execute("INSERT INTO solution_species (equation, reactants, defined_species, primary_master_species, secondary_master_species, other_products, db_id) VALUES (?, ?, ?, ?, ?, ?, ?)", current_eqn[0], reactants, defined_species.strip(), primary_ms, secondary_ms, other_products, current_dat[0]["id"])
                         # TODO: update table
                         #else:
                         #    db.execute("UPDATE solution_species SET equation = ? WHERE db_id = ?", current_eqn, current_dat[0]["id"])
