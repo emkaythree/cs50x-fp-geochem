@@ -8,12 +8,22 @@ import glob
 import os
 import sys
 import tempfile
+import werkzeug
 
 app = flask.Flask(__name__)
 
 # Ensure templates are auto-reloaded
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 app.secret_key = "arbitraryvalue1234567890-="
+
+# define the path to the upload folder - https://pythonbasics.org/flask-upload-file/
+#app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+# specifies the maximum size (in bytes) of the files to be uploaded
+#app.config['MAX_CONTENT_PATH']
+
+# create upload folder https://stackoverflow.com/questions/42424853/saving-upload-in-flask-only-saves-to-project-root
+os.makedirs(os.path.join(app.instance_path, 'databases'), exist_ok=True)
 
 # Configue SQL database
 db = cs50.SQL("sqlite:///database1.db")
@@ -39,6 +49,11 @@ def index():
         return flask.render_template("index.html", total_SMS=total_SMS, total_SS=total_SS, total_PH=total_PH)
     else:
         if flask.request.form.get("load"):
+            #https://pythonbasics.org/flask-upload-file/
+            #https://stackoverflow.com/questions/42424853/saving-upload-in-flask-only-saves-to-project-root
+            f = flask.request.files["file"]
+            f.save(os.path.join(app.instance_path, 'databases', werkzeug.utils.secure_filename(f.filename)))
+
             flask.flash("loaded!")
             return flask.redirect("/")
 
@@ -90,7 +105,7 @@ def search():
                     "SELECT solution_master_species.id AS ID, element AS Element, master_species AS Species, primary_master_species AS 'Primary Master Species', secondary_master_species AS 'Secondary Master Species', alkalinity AS Alkalinity, element_gfw AS 'Gram Formula Weight', db_meta.name AS Database FROM solution_master_species JOIN db_meta ON solution_master_species.db_id = db_meta.id WHERE element GLOB ? AND (primary_master_species = ? OR secondary_master_species = ?)", "*" + element + "*", primary_ms, secondary_ms)
                 # replace 1s and 0s with ticks and crosses
                 for i in range(len(results)):
-                    for old, new in [("0", "❌"), ("1", "✔")]:
+                    for old, new in [("0", "\u2716"), ("1", "\u2714")]:
                         results[i]["Primary Master Species"] = str(results[i]["Primary Master Species"]).replace(old, new)
                         results[i]["Secondary Master Species"] = str(results[i]["Secondary Master Species"]).replace(old, new)
 
@@ -100,7 +115,7 @@ def search():
                     "SELECT solution_master_species.id AS ID, element AS Element, master_species AS Species, primary_master_species AS 'Primary Master Species', secondary_master_species AS 'Secondary Master Species',alkalinity AS Alkalinity, element_gfw AS 'Gram Formula Weight', db_meta.name AS Database FROM solution_master_species JOIN db_meta ON solution_master_species.db_id = db_meta.id WHERE master_species = ? AND (primary_master_species = ? OR secondary_master_species = ?)", species, primary_ms, secondary_ms)
                 # replace 1s and 0s with ticks and crosses
                 for i in range(len(results)):
-                    for old, new in [("0", "❌"), ("1", "✔")]:
+                    for old, new in [("0", "\u2716"), ("1", "\u2714")]:
                         results[i]["Primary Master Species"] = str(results[i]["Primary Master Species"]).replace(old, new)
                         results[i]["Secondary Master Species"] = str(results[i]["Secondary Master Species"]).replace(old, new)
 
@@ -110,7 +125,7 @@ def search():
                     "SELECT solution_master_species.id AS ID, element AS Element, master_species AS Species,primary_master_species AS 'Primary Master Species', secondary_master_species AS 'Secondary Master Species', alkalinity AS Alkalinity, element_gfw AS 'Gram Formula Weight', db_meta.name AS Database FROM solution_master_species JOIN db_meta ON solution_master_species.db_id = db_meta.id WHERE element GLOB ? AND master_species = ? AND (primary_master_species = ? OR secondary_master_species = ?)", "*" + element + "*", species, primary_ms, secondary_ms)
                 # replace 1s and 0s with ticks and crosses
                 for i in range(len(results)):
-                    for old, new in [("0", "❌"), ("1", "✔")]:
+                    for old, new in [("0", "\u2716"), ("1", "\u2714")]:
                         results[i]["Primary Master Species"] = str(results[i]["Primary Master Species"]).replace(old, new)
                         results[i]["Secondary Master Species"] = str(results[i]["Secondary Master Species"]).replace(old, new)
 
@@ -125,12 +140,12 @@ def search():
                 "SELECT solution_species.id AS ID, defined_species AS 'Defined Species', equation AS Equation, primary_master_species AS 'Primary Master Species', secondary_master_species AS 'Secondary Master Species', log_k AS 'log K', delta_h AS 'ΔH', delta_h_units AS '(units)', db_meta.name AS Database FROM solution_species JOIN db_meta ON solution_species.db_id = db_meta.id WHERE defined_species = ?", flask.request.form.get("defined_species"))
             # replace 1s and 0s with ticks and crosses
             for i in range(len(results)):
-                for old, new in [("0", "❌"), ("1", "✔")]:
+                for old, new in [("0", "\u2716"), ("1", "\u2714")]:
                     results[i]["Primary Master Species"] = str(results[i]["Primary Master Species"]).replace(old, new)
                     results[i]["Secondary Master Species"] = str(results[i]["Secondary Master Species"]).replace(old, new)
 
             return flask.render_template("results.html", results=results)
-            #return flask.redirect("/results")
+
         elif searchtype == "phases":
             flask.flash("Phases!!")
             phase_name = flask.request.form.get("name")
@@ -151,7 +166,3 @@ def search():
             flask.flash("Must specify a valid selection of data to search")
 
         return flask.render_template("search.html")
-
-#@app.route("/results")
-#def results():
-#    return flask.render_template("results.html")

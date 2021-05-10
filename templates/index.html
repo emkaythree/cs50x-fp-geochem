@@ -15,10 +15,13 @@
     </div>
 
     <div>
-        <form action="/" method="post">
+        <form action="/" method="post" enctype="multipart/form-data">
           <!--  <div class="form-group"> -->
-            <input name="load" type="hidden" value="load">
-            <button>Load databases</button>
+            <!-- <input name="load" type="hidden" value="load"> -->
+
+            <input type="file" name ="file">
+            <input type="submit" name="load">
+            <!--<button>Load databases</button>-->
 
         </form>
         <form action="/" method="post">
