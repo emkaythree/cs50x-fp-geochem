@@ -5,6 +5,7 @@ import csv
 import flask
 import flask_session
 import glob
+import helpers
 import os
 import sys
 import tempfile
@@ -49,10 +50,26 @@ def index():
         return flask.render_template("index.html", total_SMS=total_SMS, total_SS=total_SS, total_PH=total_PH)
     else:
         if flask.request.form.get("load"):
+            # check if a SQLite database exists to store data, create if not
+            if not os.path.isfile(os.path.join(app.instance_path, 'database.db')):
+                helpers.create(app.instance_path)
+
+            # upload a file from a user's computer and store
             #https://pythonbasics.org/flask-upload-file/
             #https://stackoverflow.com/questions/42424853/saving-upload-in-flask-only-saves-to-project-root
-            f = flask.request.files["file"]
-            f.save(os.path.join(app.instance_path, 'databases', werkzeug.utils.secure_filename(f.filename)))
+            #https://stackoverflow.com/questions/11817182/uploading-multiple-files-with-flask
+
+            files = flask.request.files.getlist("file")
+            for file in files:
+                #print(file)
+                # if uploading to server
+                #file.save(os.path.join(app.instance_path, 'databases', werkzeug.utils.secure_filename(file.filename)))
+                helpers.load(file)
+
+            #for filename in glob.glob(os.path.join(app.instance_path, 'databases','*')):
+            #    helpers.load(filename)
+
+            #print(os.path.join(app.instance_path, 'databases'))
 
             flask.flash("loaded!")
             return flask.redirect("/")
