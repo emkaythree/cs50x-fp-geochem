@@ -94,7 +94,7 @@ Li+ = Li+
 	Millero 1 2 3 4 5 6 # fake values
 
 2SO3-- = S2O6-- + 2e-
-        -llnl_gamma           4.0
+        -llnl_gamma           4.0    
         log_k           41.8289
 	-delta_H	0	      	# Not possible to calculate enthalpy of reaction	S2O6-2
 #	Enthalpy of formation:	-0 kcal/mol
@@ -310,7 +310,7 @@ HalitePhreeqC
 CaCO3:H2O(s)
 CaCO3:H2O     = 1.000Ca+2     + 1.000CO3-2     + 1.000H2O
      log_k    -7.600     #73HUL/TUR
-     delta_h  -5.770     #kJ/mol
+     delta_h  -5.770     #kJ/mol        
      # Enthalpy of formation:           -1498.29        #kJ/mol        #73HUL/TUR
      -analytic -8.61086E+0 0E+0 3.01388E+2 0E+0 0E+0
 

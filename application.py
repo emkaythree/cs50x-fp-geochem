@@ -59,15 +59,21 @@ def index():
             #https://stackoverflow.com/questions/42424853/saving-upload-in-flask-only-saves-to-project-root
             #https://stackoverflow.com/questions/11817182/uploading-multiple-files-with-flask
 
+            # get the list of files uploaded
             files = flask.request.files.getlist("file")
+            # cycle through each file
             for file in files:
                 #print(file)
-                # if uploading to server
-                #file.save(os.path.join(app.instance_path, 'databases', werkzeug.utils.secure_filename(file.filename)))
-                helpers.load(file)
+                #print(file.filename)
+                # upload to server
+                file.save(os.path.join(app.instance_path, 'databases', werkzeug.utils.secure_filename(file.filename)))
+                # if a file in the databases folder has the same name as one that was just uploaded (i.e. was not uploaded on a previous occasion) then load it
+                for database in glob.glob(os.path.join(app.instance_path, 'databases','*')):
+                    if os.path.basename(database) == file.filename:
+                        #print(os.path.basename(database))
+                        helpers.load(database)
 
-            #for filename in glob.glob(os.path.join(app.instance_path, 'databases','*')):
-            #    helpers.load(filename)
+
 
             #print(os.path.join(app.instance_path, 'databases'))
 
