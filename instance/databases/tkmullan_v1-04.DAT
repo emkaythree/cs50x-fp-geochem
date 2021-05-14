@@ -1,0 +1,561 @@
+#Project specific Phreeqc database, compiled from sources as described, for Thomas Mullan's PhD
+#version 1.04: 12/12/19
+#changes from v1.04: added aqueous complex data for aluminium phytate and aluminium phosphate species and solid phase data for aluminium sulfate and aluminium hydroxysulfate
+
+SOLUTION_MASTER_SPECIES
+#element	species		alk	gfw_formula	element_gfw
+Mes		Mes-		0	Mes		194.2	
+Tes		Tes-		0	Tes		229.25
+Tris		Tris-		0	C4H10NO3 	120.136
+[InsP6]		[InsP6]-12      0	C6H6O24P6	647.944
+Tar		Tar-2		0       C4H4O6	  	148.09
+
+SOLUTION_SPECIES
+#Protonation constants for MES, TES, and TRIS from [66GOO/WIN]
+Mes- = Mes-
+log_k 0
+H+ + Mes- = HMes
+log_k 6.15
+Tes- = Tes-
+log_k 0
+H+ + Tes- = HTes
+log_k 7.5
+Tris- = Tris-
+log_k 0
+H+ + Tris- = HTris
+log_k 8.3
+
+#using protonation constants from [82EVA/MCC] as reported by [08CRE/STA], in KCl, ionic strength = 0.2 mol/L, at 25 C. 
+[InsP6]-12     = [InsP6]-12				#primary master species definition
+	log_k     0.000     
+	delta_h   0.000     #kJ/mol        
+     # Enthalpy of formation:                   #kJ/mol  
+
+[InsP6]-12 + H+ = H[InsP6]-11			#definition of H[InsP6]-11 related to the primary master species
+	log_k     9.530     
+H[InsP6]-11 + H+ = H2[InsP6]-10
+	log_k     9.530   
+H2[InsP6]-10 + H+ = H3[InsP6]-9
+	log_k     9.190    
+H3[InsP6]-9 + H+ = H4[InsP6]-8
+	log_k     7.980    
+ H4[InsP6]-8 + H+ = H5[InsP6]-7
+	log_k     6.250   
+H5[InsP6]-7 + H+ = H6[InsP6]-6
+	log_k     5.200    
+H6[InsP6]-6 + H+ = H7[InsP6]-5
+	log_k     3.160    
+H7[InsP6]-5 + H+ = H8[InsP6]-4
+	log_k     2.380    
+H8[InsP6]-4 + H+ = H9[InsP6]-3
+	log_k     2.380    
+H9[InsP6]-3 + H+ = H10[InsP6]-2
+	log_k     1.920    
+H10[InsP6]-2 + H+ = H11[InsP6]-
+	log_k     1.920    	
+H11[InsP6]- + H+ = H12[InsP6]
+	log_k     1.920
+
+#Log stability constants for the Al[InsP6] system taken from [05TOR/DOM] in 0.15 mol/L NaClO4 at 37 C. 
+H2[InsP6]-10 + Al+3 = AlH2[InsP6]-7
+	log_k     23.7
+H3[InsP6]-9 + Al+3 = AlH3[InsP6]-6
+	log_k     20.1
+H4[InsP6]-8 + Al+3 = AlH4[InsP6]-5
+	log_k     16.4
+H5[InsP6]-7 + Al+3 = AlH5[InsP6]-4
+	log_k     12.2
+H6[InsP6]-6 + Al+3 = AlH6[InsP6]-3
+	log_k     8.48	
+	
+#Log Stability constants for the Ca[InsP6] system from [06CRE/DES], calculated for infinite dilution at 25 C.
+H3[InsP6]-9 + Ca+2 = CaH3[InsP6]-7
+	log_k     7.64
+H4[InsP6]-8 + Ca+2 = CaH4[InsP6]-6
+	log_k     5.82
+H5[InsP6]-7 + Ca+2 = CaH5[InsP6]-5
+	log_k     5.41
+H3[InsP6]-9 + 2Ca+2 = Ca2H3[InsP6]-5
+	log_k     13.99
+H4[InsP6]-8 + 2Ca+2 = Ca2H4[InsP6]-4
+	log_k     11.87
+H5[InsP6]-7 + 2Ca+2 = Ca2H5[InsP6]-3
+	log_k     9.81
+H2[InsP6]-10 + 3Ca+2 = Ca3H2[InsP6]-4
+	log_k     22.52
+H3[InsP6]-9 + 3Ca+2 = Ca3H3[InsP6]-3
+	log_k     19.34
+H4[InsP6]-8 + 3Ca+2 = Ca3H4[InsP6]-2
+	log_k     15.93
+H5[InsP6]-7 + 3Ca+2 = Ca3H5[InsP6]-
+	log_k     13.54
+
+#Log stability constants for manganese-[InsP6] system from [12BRE/CIGa], calculated for zero ionic strength at 25 C. 
+[InsP6]-12 + Mn+2 = Mn[InsP6]-10
+	log_k     3.9
+H[InsP6]-11 + Mn+2 = MnH[InsP6]-9
+	log_k     10.2
+H2[InsP6]-10 + Mn+2 = MnH2[InsP6]-8
+	log_k     9.3
+H3[InsP6]-9 + Mn+2 = MnH3[InsP6]-7
+	log_k     8.3
+H4[InsP6]-8 + Mn+2 = MnH4[InsP6]-6
+	log_k     7.2
+H5[InsP6]-7 + Mn+2 = MnH5[InsP6]-5
+	log_k     5.8
+	
+#Log stability constants for iron(II)-[InsP6] system from [12BRE/CIGa], calculated for zero ionic strength at 25 C. 	
+[InsP6]-12 + Fe+2 = Fe[InsP6]-10
+	log_k     5.1
+H[InsP6]-11 + Fe+2 = FeH[InsP6]-9
+	log_k     9.8
+H2[InsP6]-10 + Fe+2 = FeH2[InsP6]-8
+	log_k     9
+H3[InsP6]-9 + Fe+2 = FeH3[InsP6]-7
+	log_k     8.1
+H4[InsP6]-8 + Fe+2 = FeH4[InsP6]-6
+	log_k     7
+H5[InsP6]-7 + Fe+2 = FeH5[InsP6]-5
+	log_k     5.5
+
+#Log stability constants for iron(III)-[InsP6] system from [12BRE/CIGb], measured in NaNO3 background, with 0.1 mol/L ionic strength, at 25 C. 		
+[InsP6]-12 + Fe+3 = Fe[InsP6]-9
+	log_k     28.5
+H[InsP6]-11 + Fe+3 = FeH[InsP6]-8
+	log_k     24.78
+H2[InsP6]-10 + Fe+3 = FeH2[InsP6]-7
+	log_k     20.61
+H3[InsP6]-9 + Fe+3 = FeH3[InsP6]-6
+	log_k     15.42
+H4[InsP6]-8 + Fe+3 = FeH4[InsP6]-5
+	log_k     10.23
+		
+#Average log stability constants for the lanthanide-[InsP6] system from [10CRE/DES], measured at 25 C and I = 0.15 mol/L in aqueous NaCl. Represented as Ln for a generic lanthanide
+[InsP6]-12 + Ln+3 = Ln[InsP6]-9
+	log_k     15.4
+H[InsP6]-11 + Ln+3 = LnH[InsP6]-8
+	log_k     14.6
+H2[InsP6]-10 + Ln+3 = LnH2[InsP6]-7
+	log_k     13.7
+H3[InsP6]-9 + Ln+3 = LnH3[InsP6]-6
+	log_k     10.6
+H4[InsP6]-8 + Ln+3 = LnH4[InsP6]-5
+	log_k     7.8
+H5[InsP6]-7 + Ln+3 = LnH5[InsP6]-4
+	log_k     4.9
+H6[InsP6]-6 + Ln+3 = LnH6[InsP6]-3
+	log_k     3.2
+
+#Aqueous AlPO4 stability constant taken from [92HAR]
+	Al+3 + PO4-3 = AlPO4
+	log_k     14.1
+#Aqueous Al(OH)PO4- stability constant taken from [92HAR]	
+	Al+3 + PO4-3 + H2O = Al(OH)PO4- + H+
+	log_k     8.37
+#Data from NIST46	
+	2Al+3 + PO4-3 = Al2PO4+3
+	log_k     16.7
+#Data from NIST46
+	Al+3 + HPO4-2 = AlHPO4+
+	log_k     6.12
+#Data from NIST46
+	Al+3 + H2(PO4)- = AlH2PO4+2
+	log_k     2.02
+#Data from NIST46
+	Al+3 + 2H2(PO4)- = Al(H2PO4)2+
+	log_k     4.82
+#Data from NIST46, equation in database specified as dissociation reaction, so rearranged to define the association of the Al2(OH)PO4+2 species
+	Al2PO4+3 + H2O = Al2(OH)PO4+2 + H+ 
+	log_k     -2.44
+#Data from NIST46, equation in database specified as dissociation reaction, so rearranged to define the association of the Al2(OH)2PO4+ species
+	Al2PO4+3 + 2H2O = Al2(OH)2PO4+ + 2H+
+	log_k     -6.79
+	
+	
+#Citrate species from the NIST46 database and references therein
+NH4+ + Cit-3 = NH4(Cit)-2
+	log_k     0.95	
+Na+ + Cit-3 = Na(Cit)-2
+	log_k     0.75		
+K+ + Cit-3 = K(Cit)-2
+	log_k     1.17		
+Mn+2 + Cit-3 = Mn(Cit)-
+	log_k     4.15
+Mn+2 + H(Cit)-2 = MnH(Cit)
+	log_k     2.3
+Mn+2 + H2(Cit)- = MnH2(Cit)+
+	log_k     1.5
+Co+2 + Cit-3 = Co(Cit)-
+	log_k     4.9		
+Co+2 + H(Cit)-2 = CoH(Cit)
+	log_k     3.19			
+Co+2 + H2(Cit)- = CoH2(Cit)+
+	log_k     1.2
+Cu+2 + H(Cit)-2 = CuH(Cit)
+	log_k     3.9
+2Cu+2 + 2Cit-3 = Cu2(Cit)2-2
+	log_k     14.8
+Zn+2 + Cit-3 = Zn(Cit)-
+	log_k     4.93
+Zn+2 + 2Cit-3 = Zn(Cit)2-4
+	log_k     6.8
+Zn+2 + H(Cit)-2 = ZnH(Cit) 
+	log_k     3
+Zn+2 + H2(Cit)- = ZnH2(Cit)+
+	log_k     1.2
+#MoO2(OH)4-2 + Cit-3 + H+ = MoO2(OH)2(Cit)-3
+#	log_k     8.3
+#MoO2(OH)4-2 + 2Cit-3 + 6H+ = MoO2(H(Cit))2
+#	log_k     33.34
+Pb+2 + 2Cit-3 = Pb(Cit)2-4
+	log_k     5.92
+Pb+2 + H(Cit)-2 = PbH(Cit)
+	log_k     2.98
+Pb+2 + H2(Cit)- = PbH2(Cit)+
+	log_k     1.7
+#Pb(Cit)2-4 + H+ = PbH2(Cit)-3
+#	log_k     4.69
+2Pb+2 + 2Cit-3 = Pb2(Cit)2-2
+	log_k     10.7
+Pb2(Cit)2-2 + H2O = Pb2(OH)(Cit)2-3 + H+
+	log_k	6.06
+Ln+3 + Cit-3 = Ln(Cit)
+	log_k	9.18		#using data for Lanthanum citrate from NIST46
+
+#Gluconate species from NIST46 database and references therein, except for manganese gluconate	
+#B(OH)4- + HGlu- = B(OH)2H(Glu)
+#	log_k	2.83
+Al+3 + HGlu- = Al(HGlu)+2
+	log_k	2
+Mg+2 + HGlu- = Mg(HGlu)+
+	log_k	0.7
+#Manganese gluconate data from [85NAG/HOR]	
+Mn+2 + 2HGlu- = Mn(HGlu)2
+	log_k 	14.7
+Fe+3 + HGlu- = Fe(HGlu)+2
+	log_k	3.1	
+#Co+2 + HGlu- = Co(Glu)+
+#	log_k	-4.96
+Cu+2 + HGlu- = Cu(HGlu)+
+	log_k	2.51
+Cu+2 + 2HGlu- = Cu(HGlu)2
+	log_k	4.59
+Zn+2 + HGlu- = Zn(HGlu)+
+	log_k	1.7
+Pb+2 + HGlu- = Pb(HGlu)+
+	log_k	2.6
+Ln+3 + HGlu- = Ln(HGlu)+2
+	log_k	2.32		#using data for Lanthanum gluconate from NIST46
+Ln+3 + 2HGlu- = Ln(HGlu)2+
+	log_k	4.25		#using data for Lanthanum gluconate from NIST46
+
+#Oxalate species from NIST46 database and references therein
+NH4+ + Ox-2 = (NH4)(Ox)-
+	log_k	0.9
+Na+ + Ox-2 = Na(Ox)-
+	log_k	0.9
+K+ + Ox-2 = K(Ox)-
+	log_k	0.8
+Ba+2 + Ox-2 = Ba(Ox)
+	log_k	2.33
+B(OH)3 + H(Ox)- = B(OH)2(Ox)- + H2O
+	log_k	0.35
+Mn+2 + Ox-2 = Mn(Ox)
+	log_k	3.95
+Mn+2 + 2Ox-2 = Mn(Ox)2-2
+	log_k	5.25
+Co+2 + Ox-2 = CoOx
+	log_k	4.71
+Co+2 + 2Ox-2 = CoOx2-2
+	log_k	7.15
+Co+2 + H(Ox)- = Co(HOx)+
+	log_k	1.61
+Co+2 + 2H(Ox)- = Co(HOx)2
+	log_k	2.89
+Cu+2 + Ox-2 = CuOx
+	log_k	4.85
+Cu+2 + 2Ox-2 = CuOx2-2
+	log_k	10.23
+Zn+2 + Ox-2 = Zn(Ox)
+	log_k	4.87
+Zn+2 + 2Ox-2 = Zn(Ox)2-2
+	log_k	7.69
+MoO4-2 + Ox-2 + 2H+ = MoO3(Ox)-2 + H2O
+	log_k	13.82
+Pb+2 + Ox-2 = Pb(Ox)
+	log_k	4.2
+Pb+2 + 2Ox-2 =Pb(Ox)2-2
+	log_k	6.31
+Pb(Ox) + H+ = PbH(Ox)+
+	log_k	1.43
+	
+#Tartrate data taken from MINTEQ.DAT file	
+Tar-2 = Tar-2
+        log_k   0
+        delta_h 0       kcal
+Tar-2 + H+ = H(Tar)-
+        log_k   4.16
+        delta_h 0       kcal
+        #-gamma  0       0.01
+Tar-2 + 2H+ = H2(Tar)
+        log_k   6.67
+        delta_h 0       kcal
+        #-gamma  0       0.01	
+Cd+2 + Tar-2 = Cd(Tar)
+        log_k   3.9
+        delta_h 0       kcal
+        -gamma  0       0.02
+Pb+2 + Tar-2 = Pb(Tar)
+        log_k   3.78
+        delta_h 0       kcal
+Ba+2 + Tar-2 = Ba(Tar)
+        log_k   2.54
+        delta_h 0       kcal
+#Tl+ + Tar-2 = Tl(Tar)- 		Tl not defined in sit.dat database
+#        log_k   1.39
+#        delta_h 0       kcal
+#Tartrate species from NIST46 database and references therein		
+Li+ + Tar-2 = Li(Tar)-
+	log_k	0.7
+Li+ + H(Tar)- = LiH(Tar)
+	log_k	0.4
+K+ + Tar-2 = K(Tar)-
+	log_k	0.4
+Na+ + Tar-2 = Na(Tar)-
+	log_k	0.9
+Na+ + H(Tar)- = NaH(Tar)
+	log_k	0.2
+Rb+ + Tar-2 = Rb(Tar)-
+	log_k	0.3
+Cs+ + Tar-2 = Cs(Tar)-
+	log_k	0.3
+NH4+ + Tar-2 = NH4(Tar)-
+	log_k	0.3
+Ca+2 + Tar-2 = Ca(Tar)
+	log_k	2.64
+Ca+2 + H(Tar)- = CaH(Tar)+
+	log_k	1.41
+Mg+2 + Tar-2 = Mg(Tar)
+	log_k	1.44
+Mg+2 + H(Tar)- = MgH(Tar)+
+	log_k	0.95
+Ra+2 + Tar-2 = Ra(Tar)
+	log_k	1.28
+#B(OH)3 + Tar-2 = B(OH)2(HTar)
+#	log_k	0.9
+Al+3 + Tar-2 = Al(Tar)+
+	log_k	2.96
+Mn+2 + Tar-2 = Mn(Tar)
+	log_k	3.38
+Mn+2 + H(Tar)- = MnH(Tar)+
+	log_k	1.17
+Fe+2 + Tar-2 = Fe(Tar)
+	log_k	2.24
+Fe+3 + Tar-2 = Fe(Tar)+
+	log_k	6.49
+Co+2 + Tar-2 = Co(Tar)
+	log_k	3.05
+Co+2 + H(Tar)- = CoH(Tar)+
+	log_k	0.98
+Co+2 + 2Tar-2 = Co(Tar)2-2
+	log_k	4
+Cu+2 + Tar-2 = Cu(Tar) 
+	log_k	3.97
+Cu+2 + 2Tar-2 = Cu(Tar)2-2 
+	log_k	4.5
+2Cu+2 + 2Tar-2 = Cu2(Tar)2
+	log_k	8.77
+Cu+2 + H(Tar)- = CuH(Tar)+
+	log_k	1.88
+Zn+2 + Tar-2 = Zn(Tar)
+	log_k	3.43
+Zn+2 + H(Tar)- = ZnH(Tar)+
+	log_k	1
+Zn+2 + 2Tar-2 = Zn(Tar)2-2
+	log_k	4.4
+#MoO2(OH)4 + 2Tar-2 + 2H+ = MoO2(HTar)2
+#	log_k	16.64
+Ln+3 + Tar-2 = Ln(Tar)+		#using data for Lanthanum tartrate from NIST46
+	log_k	4.6
+Ln+3 + 2Tar-2 = Ln(Tar)2-		#using data for Lanthanum tartrate from NIST46
+	log_k	7.59
+Ln+3 + H(Tar)- = LnH(Tar)+2		#using data for Lanthanum tartrate from NIST46
+	log_k	2.48
+#UO2+2 + H2(Tar) = UO2(HTar)H3
+#	log_k	-5.6
+#2UO2+2 + 2H2(Tar) = (UO2)2(HTar)2H6
+#	log_k	-7.98
+	
+
+PHASES
+pH_Fix
+	H+ = H+
+	log_k = 0.0
+#Data for dodecasodium phytate taken from [10CIG/CRE] at 25 C, ionic strength = 1.7 mol/L
+Na12[InsP6](s)
+	Na12[InsP6] = 7Na+ + Na5[InsP6]-7
+	log_k 1.099
+	
+#Data for pentamagnesium dihydrogen phytate from [06VEI/TOR] measured at 37 C in 0.15 mol/L NaClO4	
+Mg5H2[InsP6]:22H2O(s)
+	Mg5H2[InsP6]:22H2O = 5Mg+2 + H2[InsP6]-10 + 22H2O
+	log_k -32.93
+#Data for hexacalcium phytate from [04CRE/CRE]
+Ca6[InsP6](s)
+	Ca6[InsP6] = 6Ca+2 + [InsP6]-12
+	log_k = -58.3
+	#delta_h 7.6 	#kj/mol Enthalpy of formation
+#Data for pentacalcium dihydrogen phytate from [06VEI/TOR] measured at 37 C in 0.15 mol/L NaClO4	
+Ca5H2[InsP6]:16H2O(s)
+	Ca5H2[InsP6]:16H2O = 5Ca+2 + H2[InsP6]-10 + 16H2O
+	log_k -39.3
+#Data for pentacalcium disodium phytate from [04CRE/CRE]	
+Ca5Na2[InsP6](s) 
+	Ca5Na2[InsP6] = 5Ca+2 + 2Na+ + [InsP6]-12
+	log_k -75.7
+	#delta_h 3.7	#kj/mol Enthalpy of formation 	
+#Data for pentacalcium dipotassium phytate from [83EVA/MAR]	
+Ca5K2[InsP6]:xH2O(s)
+	Ca5K2[InsP6] = 5Ca+2 + 2K+ + [InsP6]-12
+	log_k -75.7
+	#delta_h 19.9 kcal/mol	 Enthalpy of formation 	
+#Data for pentastrontium dihydrogen phytate from [08TOR/VEI] measured at 37 C in 0.15 mol/L NaClO4	
+Sr5H2[InsP6]:16H2O(s)
+	Sr5H2[InsP6]:16H2O = 5Sr+2 + H2[InsP6]-10 + 16H2O
+	log_k -35.6
+#Data for pentabarium dihydrogen phytate from [08TOR/VEI] measured at 37 C in 0.15 mol/L NaClO4	
+Ba5H2[InsP6]:16H2O(s)
+	Ba5H2[InsP6]:16H2O = 5Ba+2 + H2[InsP6]-10 + 16H2O
+	log_k -38.3
+	
+#Data for manganese phytate from [17QUI/VEI], background media = NaClO4; ionic strength = 0.1 mol/L; temperature = 37 C. 
+Mn5H2[InsP6]:16H2O(s)
+	Mn5H2[InsP6]:16H2O = 5Mn+2 + H2[InsP6]-10 + 16H2O
+	log_k -39.9
+		
+#Anhydrous calcium citrate from NIST46
+Ca3(Cit)2(s)	
+	Ca3(Cit)2 = 3Ca+2 + 2Cit-3
+	log_k -17.0
+#Calcium hydrogen citrate from NIST46	
+CaH(Cit)(s)	
+	CaH(Cit) = Ca+2 + H+ + Cit-3
+	log_k -11.4
+
+#Magnesium oxalate from NIST46
+Mg(Ox)(s)
+	Mg(Ox) = Mg+2 + Ox-2
+	log_k -5.7
+#Magnesium oxalate dihydrate from [63MEI]
+Mg(Ox):2H2O(s)
+	Mg(Ox):2H2O     = Mg+2     + Ox-2     + 2H2O
+	log_k -8.0
+#Strontium oxalate from [NIST46]
+Sr(Ox)(s)
+	Sr(Ox) = Sr+2 + Ox-2
+	log_k -6.4
+#Strontium oxalate hydrate from [63MEI]
+Sr(Ox):H2O(s)	
+	Sr(Ox):H2O = Sr+2 + Ox-2 + H2O
+	log_k -6.8
+#Barium oxalate from NIST46
+Ba(Ox)(s)	
+	Ba(Ox) = Ba+2 + Ox-2
+	log_k -6.0
+
+#Iron(II) oxalate from [63MEI]	
+FeOx:2H2O(s)
+	Fe(Ox):2H2O     = Fe+2     + Ox-2     + 2H2O
+	log_k -6.5	
+#Manganese oxalate dihydrate from [63MEI]
+MnOx:2H2O(s)
+	Mn(Ox):2H2O     = Mn+2     + Ox-2     + 2H2O
+	log_k -5.3
+#Cobalt oxalate from [63MEI]
+Co(Ox):2H2O(s)	
+	Co(Ox):2H2O     = Co+2     + Ox-2     + 2H2O
+	log_k -7.2
+#Lead oxalate from NIST46
+Pb(Ox)(s)
+	Pb(Ox) = Pb+2 + Ox-2
+	log_k -8.0
+
+#Data a generic lanthanide oxalate taken from the NIST46 data for lanthanum oxalate
+Ln2(Ox)3(s)
+	Ln2(Ox)3 = 2Ln+3 + 3Ox-2
+	log_k -25.0 
+#Data for a mixed sodium-lanthanide salt taken from [00GAM/WOO] for sodium ytterbium oxalate hydrate
+LnNa(Ox)2(s)
+	LnNa(Ox)2 = Ln+3 + Na+ + 2Ox-2
+	log_k -19.0
+
+#Thorium oxalate from NIST46	
+Th(Ox)2:6H2O(s)	
+	Th(Ox)2:6H2O = Th+4 + 2Ox-2 + 6H2O
+	log_k -21.38
+
+#Potassium hydrogen tartrate data from [98MAR]
+KH(Tar)(s)	
+	KH(Tar) = K+ + H(Tar)-
+	log_k -2.9
+#Anhydrous calcium tartrate from  [16GAC/KUT]
+Ca(Tar)(s)
+	Ca(Tar) = Ca+2 + Tar-2
+	log_k -4.0
+#Calcium tartrate dihydrate from [63MEI]
+Ca(Tar):2H2O(s)	
+	Ca(Tar):2H2O = Ca+2 + Tar-2 + 2H2O
+	log_k -6.1
+#Copper tartrate from Dean (1985) cited by [92THO]
+Cu(Tar)(s)	
+	Cu(Tar) = Cu+2 + Tar-2
+	log_k -3.4
+#Lanthanide tartrate defined based upon data in [63MEI] for cerium tartrate nonahydrate
+Ln2(Tar)3:9H2O(s)	
+	Ln2(Tar)3:9H2O = 2Ln+3 + 3Tar-2 + 9H2O
+	log_k -19.0
+
+#Aluminium sulfate phase data taken from llnl.dat database 	
+Al2(SO4)3
+       Al2(SO4)3  =  + 2.0000 Al+++ + 3.0000 SO4--
+        log_k           19.0535
+	-delta_H	-364.566	kJ/mol	# Calculated enthalpy of reaction	Al2(SO4)3
+#	Enthalpy of formation:	-3441.04 kJ/mol
+#        -analytic -6.1001e+002 -2.4268e-001 2.9194e+004 2.4383e+002 4.5573e+002
+#       -Range:  0-300
+
+#Aluminium sulfate hexahydrate phase data taken from llnl.dat database 
+Al2(SO4)3:6H2O
+       Al2(SO4)3:6H2O  =  + 2.0000 Al+++ + 3.0000 SO4-- + 6.0000 H2O
+        log_k           1.6849
+	-delta_H	-208.575	kJ/mol	# Calculated enthalpy of reaction	Al2(SO4)3:6H2O
+#	Enthalpy of formation:	-5312.06 kJ/mol
+#        -analytic -7.1642e+002 -2.4552e-001 2.6064e+004 2.8441e+002 4.0691e+002
+#       -Range:  0-300	
+
+#Aluminium hydroxysulfate data taken from [69SIN]
+Al(OH)2.5(SO4)0.25(s)
+	Al(OH)2.5(SO4)0.25 = Al+3 + 2.5OH- + 0.25SO4-2
+	log_k 		-28.6
+
+#Alunite data taken from [77ADA/RAW]
+Alunite
+	KAl3(SO4)2(OH)6 = K+ + 3Al+3 + 2SO4-2 + 6OH-
+	log_k		-85.4
+
+#Natroalunite data taken from [77ADA/RAW]	
+Natroalunite
+	NaAl3(SO4)2(OH)6 = Na+ + 3Al+3 + 2SO4-2 + 6OH-
+	log_k 		-79.7
+
+#Crystaline felsobányaite (aka basaluminite) taken from [77ADA/RAW]
+Felsobányaite(cr)	
+	Al4(SO4)(OH)10:4H2O = 4Al+3 + SO4-2 + 10OH- + 4H2O
+	log_k 		-117.7
+	
+#Amorphous felsobányaite (aka basaluminite) taken from [77ADA/RAW]
+Felsobányaite(am)	
+	Al4(SO4)(OH)10:4H2O = 4Al+3 + SO4-2 + 10OH- + 4H2O
+	log_k 		-116.0
+	
+	

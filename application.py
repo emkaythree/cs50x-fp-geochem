@@ -27,7 +27,7 @@ app.secret_key = "arbitraryvalue1234567890-="
 os.makedirs(os.path.join(app.instance_path, 'databases'), exist_ok=True)
 
 # Configue SQL database
-db = cs50.SQL("sqlite:///database1.db")
+db = cs50.SQL("sqlite:///instance/database.db")
 
 # Configure session to use filesystem (instead of signed cookies) from finance problem set
 #app.config["SESSION_FILE_DIR"] = tempfile.mkdtemp()
@@ -39,7 +39,11 @@ db = cs50.SQL("sqlite:///database1.db")
 @app.route("/", methods=["GET", "POST"])
 def index():
     if flask.request.method == "GET":
-
+        
+        # check if a SQLite database exists to store data, create if not
+        if not os.path.isfile(os.path.join(app.instance_path, 'database.db')):
+            helpers.create(app.instance_path)
+        
         # summarise current status
         totals = db.execute("SELECT SUM(solution_master_species), SUM(solution_species), SUM(phases) FROM db_meta")
         total_SMS = totals[0].get("SUM(solution_master_species)")
@@ -50,9 +54,7 @@ def index():
         return flask.render_template("index.html", total_SMS=total_SMS, total_SS=total_SS, total_PH=total_PH)
     else:
         if flask.request.form.get("load"):
-            # check if a SQLite database exists to store data, create if not
-            if not os.path.isfile(os.path.join(app.instance_path, 'database.db')):
-                helpers.create(app.instance_path)
+
 
             # upload a file from a user's computer and store
             #https://pythonbasics.org/flask-upload-file/

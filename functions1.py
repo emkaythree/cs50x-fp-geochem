@@ -473,7 +473,7 @@ def load(datfile):
                         # add to database
                         db.execute("UPDATE phases SET equation = ?, defined_phase = ?, other_reactants = ?, dissolved_products = ? WHERE name = ? AND db_id = ?", equation[0] + "=" + equation[1], defined_phase, other_reactants, dissolved_products, current_phase, current_dat[0]["id"])
 
-                     # get log K value if present
+                    # get log K value if present
                     elif newrow[0].lower() in KEYWORDS["log_k"]:
                         print("logknewrow:", newrow)
                         db.execute("UPDATE phases SET log_k = ? WHERE name = ? AND db_id = ?", newrow[1], current_phase, current_dat[0]["id"])
