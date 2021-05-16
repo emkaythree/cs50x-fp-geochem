@@ -143,24 +143,23 @@ def load(datfile):
 
                         # else assume have encountered master species
                         else:
-                            # check if primary or secondary master species
-                            if "(" and ")" not in newrow[0]:
-                                primary = True
-                                secondary = False
-                            else:
-                                primary = False
-                                secondary = True
+                            # check if already exists in database - if not, add
+                            if len(db.execute("SELECT * FROM solution_master_species WHERE element = ? AND db_id = ?", newrow[0], current_dat[0]["id"])) == 0:
+                                # check if primary or secondary master species
+                                if "(" and ")" not in newrow[0]:
+                                    primary = True
+                                    secondary = False
+                                else:
+                                    primary = False
+                                    secondary = True
 
-                            print(newrow, primary, secondary)
-                            # add species to the solution_master_species table
-                            # element_gfw only needs to be specified for primary master species, so check whether or not it is present in a particular row to see whether it needs to be added to the SQL database
-                            ##########################################################
-                            """CHECK IF ALREADY PRESENT"""
-                            ##########################################################
-                            if len(newrow) < 5:
-                                db.execute("INSERT INTO solution_master_species (element, master_species, primary_master_species, secondary_master_species, alkalinity, gfw_formula, db_id) VALUES (?, ?, ?, ?, ?, ?, ?)", newrow[0], newrow[1], primary, secondary, newrow[2], newrow[3], current_dat[0]["id"])
-                            else:
-                                db.execute("INSERT INTO solution_master_species (element, master_species, primary_master_species, secondary_master_species, alkalinity, gfw_formula, element_gfw, db_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", newrow[0], newrow[1], primary, secondary, newrow[2], newrow[3], newrow[4], current_dat[0]["id"])
+                                print(newrow, primary, secondary)
+                                # add species to the solution_master_species table
+                                # element_gfw only needs to be specified for primary master species, so check whether or not it is present in a particular row to see whether it needs to be added to the SQL database
+                                if len(newrow) < 5:
+                                    db.execute("INSERT INTO solution_master_species (element, master_species, primary_master_species, secondary_master_species, alkalinity, gfw_formula, db_id) VALUES (?, ?, ?, ?, ?, ?, ?)", newrow[0], newrow[1], primary, secondary, newrow[2], newrow[3], current_dat[0]["id"])
+                                else:
+                                    db.execute("INSERT INTO solution_master_species (element, master_species, primary_master_species, secondary_master_species, alkalinity, gfw_formula, element_gfw, db_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", newrow[0], newrow[1], primary, secondary, newrow[2], newrow[3], newrow[4], current_dat[0]["id"])
 
             # search for solution species keyword data block
             if "SOLUTION_SPECIES" in (item.upper() for item in row):
@@ -183,9 +182,6 @@ def load(datfile):
                     elif "=" in newrow and newrow[0][0] != "#" and not newrow[0].lower() in [item for value in KEYWORDS.values() for item in value]:
                         #print(newrow)
                         # combine equation into a single list item and get rid of trailing comments
-                        ###############################################
-                        """ GET RID OF UNNECESSARY DECIMAL PLACES"""
-                        ###############################################
                         current_eqn = (" ".join(newrow)).split("#")
 
                         print("newrow:", newrow)
@@ -372,11 +368,9 @@ def load(datfile):
                     # search for an equation based upon an = sign being in the relevant row
                     elif "=" in newrow:
                         print("equation:", newrow)
-                        #recombine equation and split into left hand and right hand sides, replacing ":" with ".", and getting rid of unnecessary decimal places
-                        ###############################################
-                        """ GET RID OF UNNECESSARY DECIMAL PLACES -- ACCOUNT FOR 1.0000 etc."""
-                        ###############################################
-                        equation = (" ".join(newrow).replace(":", ".").replace("1.000", "")).split("=")
+                        #recombine equation and split into left hand and right hand sides, replacing ":" with "."
+
+                        equation = (" ".join(newrow).replace(":", ".")).split("=")
                         print("eqn:", equation)
 
                         # get the phase being defined i.e. the first species defined on a line including an = sign

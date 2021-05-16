@@ -35,15 +35,15 @@ db = cs50.SQL("sqlite:///instance/database.db")
 #app.config["SESSION_TYPE"] = "filesystem"
 #flask_session.Session(app)
 
-# index page
+# index page and upload interface
 @app.route("/", methods=["GET", "POST"])
 def index():
     if flask.request.method == "GET":
-        
+
         # check if a SQLite database exists to store data, create if not
         if not os.path.isfile(os.path.join(app.instance_path, 'database.db')):
             helpers.create(app.instance_path)
-        
+
         # summarise current status
         totals = db.execute("SELECT SUM(solution_master_species), SUM(solution_species), SUM(phases) FROM db_meta")
         total_SMS = totals[0].get("SUM(solution_master_species)")
@@ -91,6 +91,18 @@ def index():
         else:
             return flask.redirect("/")
 
+# page to look inside each individual database by master species/solution species/phases
+@app.route("/details")
+def details():
+
+    db_id = flask.request.args.get("id")
+    search_type = flask.request.args.get("type")
+
+    details = db.execute("SELECT * FROM ? WHERE db_id = ?", search_type, db_id)
+    flask.flash(db_id + " " + search_type)
+
+    return flask.render_template("details.html", details=details)
+
 # summary page
 @app.route("/overview")
 def summary():
@@ -98,9 +110,9 @@ def summary():
 
     summary = db.execute("SELECT * FROM db_meta")
 
-
     return flask.render_template("summary.html", summary=summary)
 
+# search function
 @app.route("/search", methods=["GET", "POST"])
 def search():
     if flask.request.method == "GET":
@@ -172,18 +184,21 @@ def search():
             return flask.render_template("results.html", results=results)
 
         elif searchtype == "phases":
-            flask.flash("Phases!!")
             phase_name = flask.request.form.get("name")
             formula = flask.request.form.get("formula")
             if phase_name:
                 print(phase_name)
                 results = db.execute(
-                    "SELECT phases.id AS ID, phases.name AS Name, defined_phase AS Formula, equation AS Equation, log_k AS 'log K', delta_h AS 'ΔH', delta_h_units AS '(units)', db_meta.name AS Database FROM phases JOIN db_meta ON phases.db_id = db_meta.id WHERE phases.name = ?", phase_name)
+                    "SELECT phases.id AS ID, phases.name AS Name, defined_phase AS Formula, equation AS Equation, log_k AS 'log K', delta_h AS 'ΔH', delta_h_units AS '(units)', db_meta.name AS Database FROM phases JOIN db_meta ON phases.db_id = db_meta.id WHERE phases.name LIKE ?", phase_name)
+                if len(results) == 0:
+                    flask.flash("No phases found")
                 return flask.render_template("results.html", results=results)
             elif formula:
                 print(formula)
                 results = db.execute(
                     "SELECT phases.id AS ID, phases.name AS Name, defined_phase AS Formula, equation AS Equation, log_k AS 'log K', delta_h AS 'ΔH', delta_h_units AS '(units)', db_meta.name AS Database FROM phases JOIN db_meta ON phases.db_id = db_meta.id WHERE defined_phase = ?", formula)
+                if len(results) == 0:
+                    flask.flash("No phases found")
                 return flask.render_template("results.html", results=results)
             else:
                 flask.flash("Must specify phase name or formula.")

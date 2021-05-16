@@ -1,16 +1,20 @@
 {% extends "layout.html" %}
 
+{% block title %}
+    Details
+{% endblock %}
+
 {% block main %}
 
 <div>
     <table class="table table-hover table-sm table-striped">
         <thead>
-            {% for key in results[0] %}
+            {% for key in details[0] %}
                 <td>{{ key }}</td>
             {% endfor %}
         </thead>
         <tbody>
-            {% for result in results %}
+            {% for result in details %}
                 <tr>
                     {% for key, value in result.items() %}
                         <td>{{ value }}</td>
@@ -24,11 +28,7 @@
 
 <div>
     <a href="/">&lt;&lt;&lt; Home >>></a>
-</div>
-<div>
-    <a href="/search">&lt;&lt;&lt; Search >>></a>
+    <a href="/overview">&lt;&lt;&lt; Summary >>></a>
 </div>
 
 {% endblock %}
-
-

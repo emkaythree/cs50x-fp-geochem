@@ -25,9 +25,9 @@
                 <tr>
                     <td>{{ item.id }}</td>
                     <td>{{ item.name }}</td>
-                    <td>{{ item.solution_master_species }}</td>
-                    <td>{{ item.solution_species }}</td>
-                    <td>{{ item.phases }}</td>
+                    <td><a href="/details?id={{ item.id }}&type=solution_master_species">{{ item.solution_master_species }}</a></td>
+                    <td><a href="/details?id={{ item.id }}&type=solution_species">{{ item.solution_species }}</a></td>
+                    <td><a href="/details?id={{ item.id }}&type=phases">{{ item.phases }}</a></td>
                 </tr>
             {% endfor %}
 
