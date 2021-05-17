@@ -95,13 +95,36 @@ def index():
 @app.route("/details")
 def details():
 
+    # get the requested database and type of data being searched for
     db_id = flask.request.args.get("id")
     search_type = flask.request.args.get("type")
 
-    details = db.execute("SELECT * FROM ? WHERE db_id = ?", search_type, db_id)
+    if search_type == "solution_master_species":
+        results = db.execute(
+            "SELECT solution_master_species.id AS ID, element AS Element, master_species AS Species, primary_master_species AS 'Primary Master Species', secondary_master_species AS 'Secondary Master Species', alkalinity AS Alkalinity, element_gfw AS 'Gram Formula Weight', db_meta.name AS Database FROM solution_master_species JOIN db_meta ON solution_master_species.db_id = db_meta.id WHERE db_id = ?", db_id)
+
+
+    elif search_type == "solution_species":
+        results = db.execute(
+            "SELECT solution_species.id AS ID, defined_species AS 'Defined Species', equation AS Equation, primary_master_species AS 'Primary Master Species', secondary_master_species AS 'Secondary Master Species', log_k AS 'log K', delta_h AS 'ΔH', delta_h_units AS '(units)', db_meta.name AS Database FROM solution_species JOIN db_meta ON solution_species.db_id = db_meta.id WHERE db_id = ?", db_id)
+
+    elif search_type == "phases":
+        results = db.execute(
+                    "SELECT phases.id AS ID, phases.name AS Name, defined_phase AS Formula, equation AS Equation, log_k AS 'log K', delta_h AS 'ΔH', delta_h_units AS '(units)', db_meta.name AS Database FROM phases JOIN db_meta ON phases.db_id = db_meta.id WHERE db_id = ?", db_id)
+
+
+    # replace 1s and 0s with ticks and crosses
+    if search_type == "solution_master_species" or search_type == "solution_species":
+        for i in range(len(results)):
+            for old, new in [("0", "\u2716"), ("1", "\u2714")]:
+                results[i]["Primary Master Species"] = str(results[i]["Primary Master Species"]).replace(old, new)
+                results[i]["Secondary Master Species"] = str(results[i]["Secondary Master Species"]).replace(old, new)
+
+
+    #details = db.execute("SELECT * FROM ? WHERE db_id = ?", search_type, db_id)
     flask.flash(db_id + " " + search_type)
 
-    return flask.render_template("details.html", details=details)
+    return flask.render_template("results.html", results=results)
 
 # summary page
 @app.route("/overview")
@@ -109,6 +132,9 @@ def summary():
     flask.flash("overviewed!")
 
     summary = db.execute("SELECT * FROM db_meta")
+
+
+    ################### TODO: DELETE DBs###########################
 
     return flask.render_template("summary.html", summary=summary)
 

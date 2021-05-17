@@ -132,7 +132,7 @@ def load(datfile):
                     # check that data exists on the current row
                     if newrow:
                         # ignore comments
-                        if "#" in newrow[0]:
+                        if newrow[0][0] == "#":
                             #print(newrow)
                             continue
 
@@ -177,6 +177,10 @@ def load(datfile):
                     elif newrow[0].upper() in DATABLOCK:
                         print("END OF SOLUTION SPECIES", newrow)
                         break
+
+                    # ignore comments
+                    elif newrow[0][0] == "#":
+                        continue
 
                     # assume that if an equals sign is in a line, a new species has been found, but ignore if a comment or if the equals sign is in the same row as a keyword
                     elif "=" in newrow and newrow[0][0] != "#" and not newrow[0].lower() in [item for value in KEYWORDS.values() for item in value]:
@@ -353,6 +357,10 @@ def load(datfile):
                     elif newrow[0].upper() in DATABLOCK:
                         print("END OF PHASES", newrow)
                         break
+
+                    # ignore comments
+                    elif newrow[0][0] == "#":
+                        continue
 
                     # search for a phase name - single word that is not a keyword, a comment, or an equation
                     elif not "=" in newrow and newrow[0][0] != "#" and not newrow[0].lower() in [item for value in KEYWORDS.values() for item in value]:
