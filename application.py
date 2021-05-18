@@ -91,6 +91,22 @@ def index():
         else:
             return flask.redirect("/")
 
+# delete a database
+@app.route("/delete")
+def delete():
+
+    # get the database to delete
+    db_id = flask.request.args.get("id")
+
+    db.execute("begin")
+    db.execute("DELETE FROM phases WHERE db_id = ?", db_id)
+    db.execute("DELETE FROM solution_species WHERE db_id = ?", db_id)
+    db.execute("DELETE FROM solution_master_species WHERE db_id = ?", db_id)
+    db.execute("DELETE FROM db_meta WHERE id = ?", db_id)
+    db.execute("commit")
+
+    return flask.redirect("/overview")
+
 # page to look inside each individual database by master species/solution species/phases
 @app.route("/details")
 def details():
