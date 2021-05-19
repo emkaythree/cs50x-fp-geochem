@@ -24,3 +24,15 @@ function searchtype()
     }
 
 }
+
+function showdelete(x)
+{
+    var row = document.getElementsByClassName("deletedb");
+    row[x-1].style.visibility = "visible";
+}
+
+function hidedelete(x)
+{
+    var row = document.getElementsByClassName("deletedb");
+    row[x-1].style.visibility = "hidden";
+}

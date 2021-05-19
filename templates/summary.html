@@ -16,19 +16,20 @@
                 <th>Solution master species</th>
                 <th>Solution species</th>
                 <th>Phases</th>
+                <th></th>
             </tr>
         </thead>
 
         <tbody>
             <!-- Loop through summary table-->
             {% for item in summary %}
-                <tr>
+                <tr onmouseover="showdelete({{ item.id }})" onmouseout="hidedelete({{ item.id }})">
                     <td>{{ item.id }}</td>
                     <td>{{ item.name }}</td>
                     <td><a href="/details?id={{ item.id }}&type=solution_master_species">{{ item.solution_master_species }}</a></td>
                     <td><a href="/details?id={{ item.id }}&type=solution_species">{{ item.solution_species }}</a></td>
                     <td><a href="/details?id={{ item.id }}&type=phases">{{ item.phases }}</a></td>
-                    <td><a href="/delete?id={{ item.id }}">&#x1F5D1;</a></td>
+                    <td><a href="/delete?id={{ item.id }}" class="deletedb">&#x1F5D1;</a></td>
                 </tr>
             {% endfor %}
 

@@ -306,11 +306,11 @@ Ln+3 + H(Tar)- = LnH(Tar)+2		#using data for Lanthanum tartrate from NIST46
 PHASES
 pH_Fix
 	H+ = H+
-	log_k = 0.0
+	log_k 0.0
 #Data for calcium phytate solids from [04CRE/CRE]
 Ca6[InsP6](s)
 	Ca6[InsP6] = 6Ca+2 + [InsP6]-12
-	log_k = -58.3
+	log_k -58.3
 	#delta_h 7.6 	#kj/mol Enthalpy of formation
 Ca5Na2[InsP6](s) 
 	Ca5Na2[InsP6] = 5Ca+2 + 2Na+ + [InsP6]-12

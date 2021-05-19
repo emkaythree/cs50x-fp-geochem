@@ -26,6 +26,10 @@ app.secret_key = "arbitraryvalue1234567890-="
 # create upload folder https://stackoverflow.com/questions/42424853/saving-upload-in-flask-only-saves-to-project-root
 os.makedirs(os.path.join(app.instance_path, 'databases'), exist_ok=True)
 
+# check if a SQLite database exists to store data, create if not
+if not os.path.isfile(os.path.join(app.instance_path, 'database.db')):
+    helpers.create(app.instance_path)
+
 # Configue SQL database
 db = cs50.SQL("sqlite:///instance/database.db")
 
@@ -39,10 +43,6 @@ db = cs50.SQL("sqlite:///instance/database.db")
 @app.route("/", methods=["GET", "POST"])
 def index():
     if flask.request.method == "GET":
-
-        # check if a SQLite database exists to store data, create if not
-        if not os.path.isfile(os.path.join(app.instance_path, 'database.db')):
-            helpers.create(app.instance_path)
 
         # summarise current status
         totals = db.execute("SELECT SUM(solution_master_species), SUM(solution_species), SUM(phases) FROM db_meta")
@@ -98,12 +98,8 @@ def delete():
     # get the database to delete
     db_id = flask.request.args.get("id")
 
-    db.execute("begin")
-    db.execute("DELETE FROM phases WHERE db_id = ?", db_id)
-    db.execute("DELETE FROM solution_species WHERE db_id = ?", db_id)
-    db.execute("DELETE FROM solution_master_species WHERE db_id = ?", db_id)
+    # delete entry from db_meta table and, through ON DELETE CASCADE, delete any entries in the other tables with the corresponding db_id
     db.execute("DELETE FROM db_meta WHERE id = ?", db_id)
-    db.execute("commit")
 
     return flask.redirect("/overview")
 
