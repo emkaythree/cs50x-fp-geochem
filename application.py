@@ -50,8 +50,15 @@ def index():
         total_SS = totals[0].get("SUM(solution_species)")
         total_PH = totals[0].get("SUM(phases)")
 
+        total_distinct_SMS = db.execute("SELECT COUNT(DISTINCT element) FROM solution_master_species")
+        total_distinct_SS = db.execute("SELECT COUNT(DISTINCT defined_species) FROM solution_species")
+        total_distinct_PH = db.execute("SELECT COUNT(DISTINCT name) FROM phases")
+
+
+
+
         flask.flash("Hello!")
-        return flask.render_template("index.html", total_SMS=total_SMS, total_SS=total_SS, total_PH=total_PH)
+        return flask.render_template("index.html", total_SMS=total_SMS, total_SS=total_SS, total_PH=total_PH, total_distinct_SMS=total_distinct_SMS[0].get("COUNT(DISTINCT element)"), total_distinct_SS=total_distinct_SS[0].get("COUNT(DISTINCT defined_species)"), total_distinct_PH=total_distinct_PH[0].get("COUNT(DISTINCT name)"))
     else:
         if flask.request.form.get("load"):
 
@@ -144,7 +151,6 @@ def summary():
     flask.flash("overviewed!")
 
     summary = db.execute("SELECT * FROM db_meta")
-
 
     ################### TODO: DELETE DBs###########################
 
