@@ -55,9 +55,6 @@ def index():
         total_distinct_PH = db.execute("SELECT COUNT(DISTINCT name) FROM phases")
 
 
-
-
-        flask.flash("Hello!")
         return flask.render_template("index.html", total_SMS=total_SMS, total_SS=total_SS, total_PH=total_PH, total_distinct_SMS=total_distinct_SMS[0].get("COUNT(DISTINCT element)"), total_distinct_SS=total_distinct_SS[0].get("COUNT(DISTINCT defined_species)"), total_distinct_PH=total_distinct_PH[0].get("COUNT(DISTINCT name)"))
     else:
         if flask.request.form.get("load"):
@@ -122,7 +119,6 @@ def details():
         results = db.execute(
             "SELECT solution_master_species.id AS ID, element AS Element, master_species AS Species, primary_master_species AS 'Primary Master Species', secondary_master_species AS 'Secondary Master Species', alkalinity AS Alkalinity, element_gfw AS 'Gram Formula Weight', db_meta.name AS Database FROM solution_master_species JOIN db_meta ON solution_master_species.db_id = db_meta.id WHERE db_id = ?", db_id)
 
-
     elif search_type == "solution_species":
         results = db.execute(
             "SELECT solution_species.id AS ID, defined_species AS 'Defined Species', equation AS Equation, primary_master_species AS 'Primary Master Species', secondary_master_species AS 'Secondary Master Species', log_k AS 'log K', delta_h AS 'ΔH', delta_h_units AS '(units)', db_meta.name AS Database FROM solution_species JOIN db_meta ON solution_species.db_id = db_meta.id WHERE db_id = ?", db_id)
@@ -131,7 +127,6 @@ def details():
         results = db.execute(
                     "SELECT phases.id AS ID, phases.name AS Name, defined_phase AS Formula, equation AS Equation, log_k AS 'log K', delta_h AS 'ΔH', delta_h_units AS '(units)', db_meta.name AS Database FROM phases JOIN db_meta ON phases.db_id = db_meta.id WHERE db_id = ?", db_id)
 
-
     # replace 1s and 0s with ticks and crosses
     if search_type == "solution_master_species" or search_type == "solution_species":
         for i in range(len(results)):
@@ -139,20 +134,13 @@ def details():
                 results[i]["Primary Master Species"] = str(results[i]["Primary Master Species"]).replace(old, new)
                 results[i]["Secondary Master Species"] = str(results[i]["Secondary Master Species"]).replace(old, new)
 
-
-    #details = db.execute("SELECT * FROM ? WHERE db_id = ?", search_type, db_id)
-    flask.flash(db_id + " " + search_type)
-
     return flask.render_template("results.html", results=results)
 
 # summary page
 @app.route("/overview")
 def summary():
-    flask.flash("overviewed!")
 
     summary = db.execute("SELECT * FROM db_meta")
-
-    ################### TODO: DELETE DBs###########################
 
     return flask.render_template("summary.html", summary=summary)
 
@@ -183,7 +171,9 @@ def search():
             if element:
                 print(flask.request.form.get("element"))
                 results = db.execute(
-                    "SELECT solution_master_species.id AS ID, element AS Element, master_species AS Species, primary_master_species AS 'Primary Master Species', secondary_master_species AS 'Secondary Master Species', alkalinity AS Alkalinity, element_gfw AS 'Gram Formula Weight', db_meta.name AS Database FROM solution_master_species JOIN db_meta ON solution_master_species.db_id = db_meta.id WHERE element GLOB ? AND (primary_master_species = ? OR secondary_master_species = ?)", "*" + element + "*", primary_ms, secondary_ms)
+                    "SELECT solution_master_species.id AS ID, element AS Element, master_species AS Species, primary_master_species AS 'Primary Master Species', secondary_master_species AS 'Secondary Master Species', alkalinity AS Alkalinity, element_gfw AS 'Gram Formula Weight', db_meta.name AS Database FROM solution_master_species JOIN db_meta ON solution_master_species.db_id = db_meta.id WHERE (element = ? OR element GLOB ?) AND (primary_master_species = ? OR secondary_master_species = ?)", element, element + "(*)", primary_ms, secondary_ms)
+                if len(results) == 0:
+                    flask.flash("No master species found")
                 # replace 1s and 0s with ticks and crosses
                 for i in range(len(results)):
                     for old, new in [("0", "\u2716"), ("1", "\u2714")]:
@@ -194,6 +184,8 @@ def search():
             elif species:
                 results = db.execute(
                     "SELECT solution_master_species.id AS ID, element AS Element, master_species AS Species, primary_master_species AS 'Primary Master Species', secondary_master_species AS 'Secondary Master Species',alkalinity AS Alkalinity, element_gfw AS 'Gram Formula Weight', db_meta.name AS Database FROM solution_master_species JOIN db_meta ON solution_master_species.db_id = db_meta.id WHERE master_species = ? AND (primary_master_species = ? OR secondary_master_species = ?)", species, primary_ms, secondary_ms)
+                if len(results) == 0:
+                    flask.flash("No master species found")
                 # replace 1s and 0s with ticks and crosses
                 for i in range(len(results)):
                     for old, new in [("0", "\u2716"), ("1", "\u2714")]:
@@ -204,6 +196,9 @@ def search():
             elif element and species:
                 results = db.execute(
                     "SELECT solution_master_species.id AS ID, element AS Element, master_species AS Species,primary_master_species AS 'Primary Master Species', secondary_master_species AS 'Secondary Master Species', alkalinity AS Alkalinity, element_gfw AS 'Gram Formula Weight', db_meta.name AS Database FROM solution_master_species JOIN db_meta ON solution_master_species.db_id = db_meta.id WHERE element GLOB ? AND master_species = ? AND (primary_master_species = ? OR secondary_master_species = ?)", "*" + element + "*", species, primary_ms, secondary_ms)
+                if len(results) == 0:
+                    flask.flash("No master species found")
+
                 # replace 1s and 0s with ticks and crosses
                 for i in range(len(results)):
                     for old, new in [("0", "\u2716"), ("1", "\u2714")]:
@@ -215,10 +210,12 @@ def search():
                 flask.flash("Must specify element and/or species.")
 
         elif searchtype == "solution_species":
-            flask.flash("Solution species!!")
             print(flask.request.form.get("defined_species"))
             results = db.execute(
                 "SELECT solution_species.id AS ID, defined_species AS 'Defined Species', equation AS Equation, primary_master_species AS 'Primary Master Species', secondary_master_species AS 'Secondary Master Species', log_k AS 'log K', delta_h AS 'ΔH', delta_h_units AS '(units)', db_meta.name AS Database FROM solution_species JOIN db_meta ON solution_species.db_id = db_meta.id WHERE defined_species = ?", flask.request.form.get("defined_species"))
+            if len(results) == 0:
+                flask.flash("No solution species found")
+
             # replace 1s and 0s with ticks and crosses
             for i in range(len(results)):
                 for old, new in [("0", "\u2716"), ("1", "\u2714")]:

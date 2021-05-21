@@ -16,24 +16,16 @@
     </div>
 
     <div>
-        <form action="/" method="post" enctype="multipart/form-data">
-          <!--  <div class="form-group"> -->
-            <!-- <input name="load" type="hidden" value="load"> -->
+        <h3>Upload file(s):</h3>
+            <form action="/" method="post" enctype="multipart/form-data">
+              <!--  <div class="form-group"> -->
+                <!-- <input name="load" type="hidden" value="load"> -->
 
-            <input type="file" name ="file" multiple accept=".dat">
-            <input type="submit" name="load">
-            <!--<button>Load databases</button>-->
+                <input type="file" name ="file" multiple accept=".dat">
+                <input type="submit" name="load">
+                <!--<button>Load databases</button>-->
 
-        </form>
-        <form action="/" method="post">
-
-            <input name="overview" type="hidden" value="overview">
-            <button>Get summary</button>
-        </form>
-        <form action="/" method="post">
-            <input name="search" type="hidden" value="search">
-            <button>Search</button>
-        </form>
+            </form>
     </div>
 
 {% endblock %}
