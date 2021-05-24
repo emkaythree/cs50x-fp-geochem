@@ -313,6 +313,20 @@ CaCO3:H2O     = 1.000Ca+2     + 1.000CO3-2     + 1.000H2O
      delta_h  -5.770     #kJ/mol        
      # Enthalpy of formation:           -1498.29        #kJ/mol        #73HUL/TUR
      -analytic -8.61086E+0 0E+0 3.01388E+2 0E+0 0E+0
+     
+GypsumPHREEQC
+	CaSO4:2H2O = Ca+2 + SO4-2 + 2 H2O
+	-log_k	-4.58
+	-delta_h -0.109 kcal
+	-analytic	68.2401	0.0	-3221.51	-25.0627
+	-analytical_expression  93.7  5.99E-03  -4e3  -35.019 # better fits the appendix data of Appelo, 2015, AG 55, 62
+	-Vm 73.9 # 172.18 / 2.33  (Vm H2O = 13.9 cm3/mol)    
+
+Akermanite
+	Ca2MgSi2O7 + 6 H+  =  Mg+2 + 2 Ca+2 + 2 H4SiO4 - H2O # llnl.dat
+	log_k	   45.23
+	-delta_H	-289	kJ/mol
+	Vm 92.6	
 
 PITZER
 -MacInnes   false

@@ -5,6 +5,7 @@ import csv
 import flask
 import glob
 import os
+import re
 import sys
 
 # global variable to store the standard Phreeqc keyword data blocks
@@ -364,6 +365,7 @@ def load(datfile):
 
                     # search for a phase name - single word that is not a keyword, a comment, or an equation
                     elif not "=" in newrow and newrow[0][0] != "#" and not newrow[0].lower() in [item for value in KEYWORDS.values() for item in value]:
+
                         print(newrow)
                         # get rid of trailing comments and convert ":" to "."
                         current_phase = newrow[0].replace(":", ".")
@@ -374,11 +376,12 @@ def load(datfile):
                             db.execute("INSERT INTO phases (name, db_id) VALUES (?, ?)", current_phase, current_dat[0]["id"])
 
                     # search for an equation based upon an = sign being in the relevant row
-                    elif "=" in newrow:
+                    elif "=" in newrow and not newrow[0].lower() in [item for value in KEYWORDS.values() for item in value]:
                         print("equation:", newrow)
-                        #recombine equation and split into left hand and right hand sides, replacing ":" with "."
+                        #recombine equation and split into left hand and right hand sides, replacing ":" with ".", also get rid of comments
 
-                        equation = (" ".join(newrow).replace(":", ".")).split("=")
+                        tmpeqn = (" ".join(newrow).replace(":", "."))
+                        equation = re.split("=|#",tmpeqn)
                         print("eqn:", equation)
 
                         # get the phase being defined i.e. the first species defined on a line including an = sign
