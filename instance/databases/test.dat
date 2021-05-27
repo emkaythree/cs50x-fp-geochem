@@ -326,7 +326,14 @@ Akermanite
 	Ca2MgSi2O7 + 6 H+  =  Mg+2 + 2 Ca+2 + 2 H4SiO4 - H2O # llnl.dat
 	log_k	   45.23
 	-delta_H	-289	kJ/mol
-	Vm 92.6	
+	Vm 92.6
+
+ArcanitePITZER
+	K2SO4  =  SO4-2 + 2 K+
+	log_k   -1.776; -delta_h 5 kcal
+	-analytical_expression   674.142  0.30423  -18037  -280.236  0  -1.44055e-4 # ref. 3
+	# Note, the Linke and Seidell data may give subsaturation in other xpt's, SI = -0.06
+	-Vm 65.5	
 
 PITZER
 -MacInnes   false

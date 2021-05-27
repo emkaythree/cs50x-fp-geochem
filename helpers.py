@@ -117,7 +117,8 @@ def load(datfile):
         print(encoding)
 
     # open file using detected encoding
-    with open(datfile, "r", encoding=encoding) as file:
+    with open(datfile, "r", encoding=encoding, newline="") as file:
+        #tempfile = file.read().replace(";", "\n")
         reader = csv.reader(file, delimiter="\t")
 
         # scroll through file searching for keyword data blocks

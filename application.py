@@ -59,38 +59,29 @@ def index():
     else:
         if flask.request.form.get("load"):
 
-
             # upload a file from a user's computer and store
-            #https://pythonbasics.org/flask-upload-file/
-            #https://stackoverflow.com/questions/42424853/saving-upload-in-flask-only-saves-to-project-root
-            #https://stackoverflow.com/questions/11817182/uploading-multiple-files-with-flask
+                #https://pythonbasics.org/flask-upload-file/
+                #https://stackoverflow.com/questions/42424853/saving-upload-in-flask-only-saves-to-project-root
+                #https://stackoverflow.com/questions/11817182/uploading-multiple-files-with-flask
+
+            # check that a file was actually selected - https://stackoverflow.com/questions/23600059/check-flask-upload-if-user-does-not-selected-file
+            if flask.request.files["file"].filename == "":
+                flask.flash("Please select file(s) to upload")
+                return flask.redirect("/")
 
             # get the list of files uploaded
             files = flask.request.files.getlist("file")
             # cycle through each file
             for file in files:
-                #print(file)
-                #print(file.filename)
                 # upload to server
                 file.save(os.path.join(app.instance_path, 'databases', werkzeug.utils.secure_filename(file.filename)))
                 # if a file in the databases folder has the same name as one that was just uploaded (i.e. was not uploaded on a previous occasion) then load it
                 for database in glob.glob(os.path.join(app.instance_path, 'databases','*')):
                     if os.path.basename(database) == file.filename:
-                        #print(os.path.basename(database))
                         helpers.load(database)
 
-
-
-            #print(os.path.join(app.instance_path, 'databases'))
-
-            flask.flash("loaded!")
+            flask.flash("Loaded!")
             return flask.redirect("/")
-
-        elif flask.request.form.get("overview"):
-            return flask.redirect("/overview")
-
-        elif flask.request.form.get("search"):
-            return flask.redirect("/search")
 
         else:
             return flask.redirect("/")
@@ -101,10 +92,12 @@ def delete():
 
     # get the database to delete
     db_id = flask.request.args.get("id")
+    db_name = db.execute("SELECT name FROM db_meta WHERE id = ?", db_id)
 
     # delete entry from db_meta table and, through ON DELETE CASCADE, delete any entries in the other tables with the corresponding db_id
     db.execute("DELETE FROM db_meta WHERE id = ?", db_id)
 
+    flask.flash("Deleted " + db_name[0]["name"])
     return flask.redirect("/overview")
 
 # page to look inside each individual database by master species/solution species/phases
@@ -147,13 +140,13 @@ def summary():
 # search function
 @app.route("/search", methods=["GET", "POST"])
 def search():
+    # show search page
     if flask.request.method == "GET":
-        flask.flash("Search!")
         return flask.render_template("search.html")
+    # search function
     else:
-
         searchtype = flask.request.form.get("type")
-        print(searchtype)
+
         if searchtype == "solution_master_species":
             element = flask.request.form.get("element")
             species = flask.request.form.get("species")
@@ -167,9 +160,8 @@ def search():
             elif flask.request.form.get("primary") == "secondary":
                 primary_ms = -1
                 secondary_ms = 1
-
+            # if searching by element
             if element:
-                print(flask.request.form.get("element"))
                 results = db.execute(
                     "SELECT solution_master_species.id AS ID, element AS Element, master_species AS Species, primary_master_species AS 'Primary Master Species', secondary_master_species AS 'Secondary Master Species', alkalinity AS Alkalinity, element_gfw AS 'Gram Formula Weight', db_meta.name AS Database FROM solution_master_species JOIN db_meta ON solution_master_species.db_id = db_meta.id WHERE (element = ? OR element GLOB ?) AND (primary_master_species = ? OR secondary_master_species = ?)", element, element + "(*)", primary_ms, secondary_ms)
                 if len(results) == 0:
@@ -181,6 +173,7 @@ def search():
                         results[i]["Secondary Master Species"] = str(results[i]["Secondary Master Species"]).replace(old, new)
 
                 return flask.render_template("results.html", results=results)
+            # if searching by species
             elif species:
                 results = db.execute(
                     "SELECT solution_master_species.id AS ID, element AS Element, master_species AS Species, primary_master_species AS 'Primary Master Species', secondary_master_species AS 'Secondary Master Species',alkalinity AS Alkalinity, element_gfw AS 'Gram Formula Weight', db_meta.name AS Database FROM solution_master_species JOIN db_meta ON solution_master_species.db_id = db_meta.id WHERE master_species = ? AND (primary_master_species = ? OR secondary_master_species = ?)", species, primary_ms, secondary_ms)
@@ -193,12 +186,12 @@ def search():
                         results[i]["Secondary Master Species"] = str(results[i]["Secondary Master Species"]).replace(old, new)
 
                 return flask.render_template("results.html", results=results)
+            # if searching by both element and species
             elif element and species:
                 results = db.execute(
                     "SELECT solution_master_species.id AS ID, element AS Element, master_species AS Species,primary_master_species AS 'Primary Master Species', secondary_master_species AS 'Secondary Master Species', alkalinity AS Alkalinity, element_gfw AS 'Gram Formula Weight', db_meta.name AS Database FROM solution_master_species JOIN db_meta ON solution_master_species.db_id = db_meta.id WHERE element GLOB ? AND master_species = ? AND (primary_master_species = ? OR secondary_master_species = ?)", "*" + element + "*", species, primary_ms, secondary_ms)
                 if len(results) == 0:
                     flask.flash("No master species found")
-
                 # replace 1s and 0s with ticks and crosses
                 for i in range(len(results)):
                     for old, new in [("0", "\u2716"), ("1", "\u2714")]:
@@ -210,12 +203,10 @@ def search():
                 flask.flash("Must specify element and/or species.")
 
         elif searchtype == "solution_species":
-            print(flask.request.form.get("defined_species"))
             results = db.execute(
                 "SELECT solution_species.id AS ID, defined_species AS 'Defined Species', equation AS Equation, primary_master_species AS 'Primary Master Species', secondary_master_species AS 'Secondary Master Species', log_k AS 'log K', delta_h AS 'ΔH', delta_h_units AS '(units)', db_meta.name AS Database FROM solution_species JOIN db_meta ON solution_species.db_id = db_meta.id WHERE defined_species = ?", flask.request.form.get("defined_species"))
             if len(results) == 0:
                 flask.flash("No solution species found")
-
             # replace 1s and 0s with ticks and crosses
             for i in range(len(results)):
                 for old, new in [("0", "\u2716"), ("1", "\u2714")]:
@@ -227,15 +218,15 @@ def search():
         elif searchtype == "phases":
             phase_name = flask.request.form.get("name")
             formula = flask.request.form.get("formula")
+            # if searching by phase name
             if phase_name:
-                print(phase_name)
                 results = db.execute(
                     "SELECT phases.id AS ID, phases.name AS Name, defined_phase AS Formula, equation AS Equation, log_k AS 'log K', delta_h AS 'ΔH', delta_h_units AS '(units)', db_meta.name AS Database FROM phases JOIN db_meta ON phases.db_id = db_meta.id WHERE phases.name LIKE ?", phase_name)
                 if len(results) == 0:
                     flask.flash("No phases found")
                 return flask.render_template("results.html", results=results)
+            # if searching by formula
             elif formula:
-                print(formula)
                 results = db.execute(
                     "SELECT phases.id AS ID, phases.name AS Name, defined_phase AS Formula, equation AS Equation, log_k AS 'log K', delta_h AS 'ΔH', delta_h_units AS '(units)', db_meta.name AS Database FROM phases JOIN db_meta ON phases.db_id = db_meta.id WHERE defined_phase = ?", formula)
                 if len(results) == 0:
