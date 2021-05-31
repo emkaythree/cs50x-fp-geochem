@@ -12,8 +12,21 @@
         <tbody>
             {% for result in results %}
                 <tr>
+                    <!-- cycle through dict of results -->
                     {% for key, value in result.items() %}
-                        <td>{{ value }}</td>
+
+                        <!-- check for 'clickable' items - i.e. results that you can click to search in more detail -->
+                        {% if key == "Element" or key == "Species" %}
+                            <td><a href="/details2?item={{ value }}&key={{ key }}&type=solution_master_species">{{ value }}</a></td>
+
+                        {% elif key == "Defined Species" %}
+                            <td><a href="/details2?item={{ value }}&key=defined_species&type=solution_species">{{ value }}</a></td>
+                        {% elif key == "Name" or key == "Formula" %}
+                            <td><a href="/details2?item={{ value }}&key={{ key }}&type=phases">{{ value }}</a></td>
+                        {% else %}
+                            <td>{{ value }}</td>
+
+                        {% endif %}
                     {% endfor %}
                 </tr>
             {% endfor %}

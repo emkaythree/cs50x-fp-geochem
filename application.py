@@ -129,6 +129,34 @@ def details():
 
     return flask.render_template("results.html", results=results)
 
+# function to search by clicking on results from a search result
+@app.route("/details2")
+def details2():
+    # get type of data to search and item being searched for
+    search_item = flask.request.args.get("item")
+
+    search_type = flask.request.args.get("type")
+
+    #print(search_item, search_parameter, search_type)
+
+    if search_type == "solution_master_species":
+        search_parameter = flask.request.args.get("key").replace('Species', 'master_species')
+        results = db.execute(
+            "SELECT solution_master_species.id AS ID, element AS Element, master_species AS Species, primary_master_species AS 'Primary Master Species', secondary_master_species AS 'Secondary Master Species', alkalinity AS Alkalinity, element_gfw AS 'Gram Formula Weight', db_meta.name AS Database FROM solution_master_species JOIN db_meta ON solution_master_species.db_id = db_meta.id WHERE solution_master_species.? = ?", search_parameter, search_item)
+
+    elif search_type == "solution_species":
+
+        results = db.execute(
+            "SELECT solution_species.id AS ID, defined_species AS 'Defined Species', equation AS Equation, primary_master_species AS 'Primary Master Species', secondary_master_species AS 'Secondary Master Species', log_k AS 'log K', delta_h AS 'ΔH', delta_h_units AS '(units)', db_meta.name AS Database FROM solution_species JOIN db_meta ON solution_species.db_id = db_meta.id WHERE solution_species.? = ?", search_parameter, search_item)
+
+    elif search_type == "phases":
+        search_parameter = flask.request.args.get("key").replace('Formula', 'defined_phase')
+        results = db.execute(
+                    "SELECT phases.id AS ID, phases.name AS Name, defined_phase AS Formula, equation AS Equation, log_k AS 'log K', delta_h AS 'ΔH', delta_h_units AS '(units)', db_meta.name AS Database FROM phases JOIN db_meta ON phases.db_id = db_meta.id WHERE phases.? = ?", search_parameter, search_item)
+
+
+    return flask.render_template("results.html", results=results)
+
 # summary page
 @app.route("/overview")
 def summary():
